@@ -1,0 +1,169 @@
+body {
+  background-color: #f7f7f7;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.table thead {
+  background-color: #f7f7f7;
+  color: #333;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.table tbody {
+  background-color: #ffffff;
+  color: #333;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.table tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+.table tfoot {
+  background-color: #f7f7f7;
+  color: #333;
+  text-align: left;
+  padding: 12px 16px;
+  border-top: 1px solid #ddd;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  border-right: 1px solid #ddd;
+}
+
+.table th:last-child,
+.table td:last-child {
+  border-right: none;
+}
+
+footer {
+  background-color: #f7f7f7; /* Light Gray */
+  padding: 10px;
+  color: #666666; /* Dark Gray */
+  text-align: center;
+  clear: both;
+  position: relative;
+  z-index: 10;
+}
+
+footer .container-fluid {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+footer .text-muted {
+  color: #999999; /* Medium Gray */
+}
+
+footer a {
+  color: #337ab7; /* Blue */
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+footer a:hover {
+  color: #23527c; /* Dark Blue */
+}
+
+.btn {
+  padding: 7px 14px; /* Increase padding for a larger button */
+  border: none; /* Remove default border */
+  border-radius: 30px; /* Fully rounded corners for a pill shape */
+  font-size: 14px; /* Font size */
+  font-weight: 400; /* Semi-bold text */
+  color: #fff; /* White text color */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease; /* Smooth transitions */
+  cursor: pointer; /* Pointer cursor on hover */
+  outline: none; /* Remove outline on focus */
+}
+
+.text-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  padding: 4px 8px;
+  /* Add padding for a better look */
+  border-radius: 10px;
+  /* Rounded corners */
+  font-size: 8px;
+  /* Adjust font size */
+  font-weight: 500;
+  /* Make the text bold */
+  text-transform: uppercase;
+  /* Uppercase text */
+  display: inline-block;
+  /* Ensure it behaves like a block */
+  transition: transform 0.2s;
+  /* Smooth transition for hover effect */
+}
+
+.badge-custom-warning {
+  background-color: #ffc107;
+  /* Custom warning color */
+  color: #212529;
+  /* Dark text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Add shadow */
+}
+
+.badge-custom-success {
+  background-color: #28a745;
+  /* Custom success color */
+  color: #ffffff;
+  /* White text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Add shadow */
+}
+
+.badge-custom-secondary {
+  background-color: #6c757d;
+  /* Custom secondary color */
+  color: #ffffff;
+  /* White text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Add shadow */
+}
+
+.badge-custom-danger {
+  background-color: #dc3545;
+  /* Custom danger color */
+  color: #ffffff;
+  /* White text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Add shadow */
+}
+
+.badge:hover {
+  transform: scale(1.05);
+  /* Slightly enlarge on hover */
+}
+
+.alert {
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
