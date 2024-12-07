@@ -1,7 +1,10 @@
 <style>
+    html,
+    body {
+        margin: 0;
+    }
     /* Navbar */
     .navbar {
-
         /* Increased blur for a more modern feel */
         transition: background-color 0.3s ease;
         -webkit-box-shadow: -1.5px 5.5px 10.5px -2px #d5bfbf;
@@ -11,7 +14,6 @@
         -webkit-backdrop-filter: blur(13px);
         backdrop-filter: blur(13px);
         border: 1px solid rgba(255, 255, 255, 0.35);
-
     }
 
     .navbar.scrolled {

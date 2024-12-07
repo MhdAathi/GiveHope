@@ -2,7 +2,7 @@
 $host = "localhost";
 $username = "root";
 $password = "";
-$database = "bb";
+$database = "give_hope";
 
 $con = mysqli_connect("$host", "$username", "$password", "$database");
 
