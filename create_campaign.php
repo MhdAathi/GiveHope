@@ -1,5 +1,5 @@
 <?php
-session_start();
+include('admin/authentication.php');
 include('includes/header.php');
 include('includes/navbar.php');
 ?>
@@ -146,7 +146,6 @@ include('includes/navbar.php');
         }
     }
 </style>
-
 
 <section class="form-section">
     <div class="container mt-5">

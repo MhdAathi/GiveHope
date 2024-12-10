@@ -1,5 +1,5 @@
 <?php
-//include('admin/authentication.php');
+include('admin/authentication.php');
 include('includes/header.php');
 include('includes/navbar.php');
 ?>
@@ -8,80 +8,247 @@ include('includes/navbar.php');
     /* Hero Section */
     .hero {
         background: linear-gradient(to right, #1d3557, #457b9d);
-        /* Gradient from dark to light blue */
         color: white;
         text-align: center;
-        padding: 120px 0;
-        /* Adjusted padding for balanced spacing */
+        padding: 100px 0;
         animation: fadeIn 1.5s ease-in-out;
     }
 
     .hero h1 {
-        font-size: 4.5rem;
-        /* Slightly larger font size for the heading */
+        font-size: 3.5rem;
         font-weight: 700;
-        /* Bold text for emphasis */
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-        /* Subtle shadow effect for text */
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     .hero p {
         font-size: 1.4rem;
-        margin-top: 20px;
+        margin-top: 15px;
         font-weight: 300;
-        /* Light weight for better readability */
-        text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+        text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.3);
     }
 
     .hero a {
-        font-size: 1.2rem;
-        padding: 15px 40px;
+        font-size: 1.1rem;
+        padding: 12px 28px;
         border-radius: 25px;
         margin: 10px;
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        text-decoration: none;
+    }
+
+    .hero a.btn-light {
+        background-color: #ffffff;
+        color: #1d3557;
+    }
+
+    .hero a.btn-outline-light {
+        border: 2px solid #ffffff;
+        color: #ffffff;
     }
 
     .hero a:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        color: #1d3557;
     }
 
     /* Campaign Section */
     .campaigns {
-        background-color: #e9ecef;
-        padding: 50px 0;
+        background-color: #ffffff;
+        padding: 20px;
         animation: fadeInUp 1.5s ease-out;
-    }
-
-    .campaigns-container {
         display: flex;
-        justify-content: center;
-        gap: 2rem;
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: center;
     }
 
-    .card {
-        width: 18rem;
-        margin-bottom: 1rem;
-        border: none;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease-in-out;
+    .campaign-wrapper-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        max-width: 1200px;
     }
 
-    .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    .campaign-wrapper {
+        display: flex;
+        overflow: hidden;
+        gap: 20px;
+        width: 100%;
+        max-width: 1000px;
+        position: relative;
     }
 
-    .card-title {
-        font-size: 1.5rem;
+    /* Add animation classes */
+    .campaign-card.slide-in-right {
+        animation: slideInRight 0.5s ease forwards;
+    }
+
+    .campaign-card.slide-in-left {
+        animation: slideInLeft 0.5s ease forwards;
+    }
+
+    .campaign-card {
+        width: 100%;
+        max-width: 350px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .campaign-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .campaign-header {
+        position: relative;
+    }
+
+    .campaign-header .verified-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: green;
+        color: white;
+        font-size: 12px;
         font-weight: bold;
+        padding: 3px 8px;
+        border-radius: 5px;
+        z-index: 2;
     }
 
-    .card-text {
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
+    .campaign-header .campaign-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
     }
+
+    .campaign-body {
+        padding: 15px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .campaign-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .campaign-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #777;
+        margin-bottom: 10px;
+    }
+
+    .campaign-description {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 15px;
+        height: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .campaign-progress {
+        position: relative;
+        background: #f0f0f0;
+        border-radius: 5px;
+        overflow: hidden;
+        height: 8px;
+        margin-bottom: 15px;
+    }
+
+    .campaign-progress .progress-bar {
+        height: 100%;
+        background: #28a745;
+        width: 0;
+        transition: width 0.5s ease;
+    }
+
+    .campaign-stats p {
+        font-size: 12px;
+        margin: 0;
+        line-height: 1.2;
+        margin-bottom: 15px;
+    }
+
+    .campaign-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-donate {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-donate,
+    .btn-view {
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500%;
+        padding: 8px 15px;
+        border-radius: 20px;
+        text-align: center;
+        flex: 1;
+    }
+
+    .btn-donate {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-view {
+        background: #1d3557;
+        color: white;
+    }
+
+    .btn-donate:hover,
+    .btn-view:hover {
+        opacity: 0.9;
+    }
+
+    .arrow-left,
+    .arrow-right {
+        background: #1d3557;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 50px;
+        height: 50px;
+    }
+
+    .arrow-left:hover,
+    .arrow-right:hover {
+        opacity: 0.9;
+        transform: scale(1.1);
+    }
+
+    .arrow-left:disabled,
+    .arrow-right:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    /* Campaign Section End*/
 
     /* How it Works Section */
     .how-it-works {
@@ -101,53 +268,6 @@ include('includes/navbar.php');
         transform: rotate(360deg);
     }
 
-    /* Animations */
-    @keyframes fadeIn {
-        0% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
-    @keyframes fadeInUp {
-        0% {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes fadeInFromLeft {
-        0% {
-            transform: translateX(-50px);
-            opacity: 0;
-        }
-
-        100% {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes fadeInFromRight {
-        0% {
-            transform: translateX(50px);
-            opacity: 0;
-        }
-
-        100% {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
     /* Responsive design tweaks */
     @media (max-width: 768px) {
         .hero h1 {
@@ -158,12 +278,18 @@ include('includes/navbar.php');
             font-size: 1.2rem;
         }
 
-        .card-body {
-            padding: 1.5rem;
+        .campaign-card {
+            width: 100%;
+            max-width: 350px;
         }
 
-        .campaigns-container {
-            display: block;
+        .campaign-navigation {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .campaign-navigation button {
+            margin: 5px 0;
         }
     }
 
@@ -186,6 +312,31 @@ include('includes/navbar.php');
         width: 100%;
         height: 500px;
     }
+
+    /* Smooth Transition Animations */
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
 </style>
 
 <!-- Hero Section -->
@@ -200,36 +351,59 @@ include('includes/navbar.php');
 
 <!-- Campaigns Section -->
 <section class="campaigns">
-    <div class="container">
-        <h2 class="text-center">Our Active Campaigns</h2>
-        <div class="campaigns-container">
-            <div class="card">
-                <img src="pics/2.jpg" class="card-img-top" alt="Campaign Image">
-                <div class="card-body">
-                    <h5 class="card-title">Campaign 1</h5>
-                    <p class="card-text">Help children in need</p>
-                    <a href="#" class="btn btn-primary">Donate</a>
-                </div>
-            </div>
-            <div class="card">
-                <img src="pics/3.jpg" class="card-img-top" alt="Campaign Image">
-                <div class="card-body">
-                    <h5 class="card-title">Campaign 2</h5>
-                    <p class="card-text">Support for the elderly</p>
-                    <a href="#" class="btn btn-primary">Donate</a>
-                </div>
-            </div>
-            <div class="card">
-                <img src="pics/4.jpg" class="card-img-top" alt="Campaign Image">
-                <div class="card-body">
-                    <h5 class="card-title">Campaign 3</h5>
-                    <p class="card-text">Clean water for all</p>
-                    <a href="#" class="btn btn-primary">Donate</a>
-                </div>
-            </div>
+    <div class="campaign-wrapper-container">
+        <button class="arrow-left" onclick="prevCards()">←</button>
+        <div class="campaign-wrapper">
+            <!-- Dynamic PHP Cards -->
+            <?php
+            // Fetch campaigns from the database
+            $query = "SELECT * FROM campaigns WHERE status = 'Accepted'";
+            $query_run = mysqli_query($con, $query);
+
+            if ($query_run && mysqli_num_rows($query_run) > 0) {
+                foreach ($query_run as $campaign) {
+                    // Calculate progress
+                    $progress = ($campaign['raised'] / $campaign['goal']) * 100;
+            ?>
+                    <div class="campaign-card">
+                        <div class="campaign-header">
+                            <div class="verified-badge">
+                                <span>✔ Verified</span>
+                            </div>
+                            <img src="<?= htmlspecialchars($campaign['image']); ?>" alt="<?= htmlspecialchars($campaign['title']); ?>" class="campaign-image">
+                        </div>
+                        <div class="campaign-body">
+                            <h3 class="campaign-title"><?= htmlspecialchars($campaign['title']); ?></h3>
+                            <div class="campaign-meta">
+                                <span class="campaign-location"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($campaign['location']); ?></span>
+                                <span class="campaign-category"><?= htmlspecialchars($campaign['category']); ?></span>
+                            </div>
+                            <p class="campaign-description"><?= htmlspecialchars(substr($campaign['description'], 0, 100)) . '...'; ?></p>
+                            <div class="campaign-progress">
+                                <div class="progress-bar" style="width: <?= round($progress, 2); ?>%;"></div>
+                                <span class="progress-text"><?= round($progress, 2); ?>%</span>
+                            </div>
+                            <div class="campaign-stats">
+                                <p><strong>Raised:</strong> LKR <?= number_format($campaign['raised'], 2); ?></p>
+                                <p><strong>Goal:</strong> LKR <?= number_format($campaign['goal'], 2); ?></p>
+                            </div>
+                            <div class="campaign-actions">
+                                <a href="donate.php?id=<?= $campaign['id']; ?>" class="btn-donate">Donate Now</a>
+                                <a href="view_campaign.php?id=<?= $campaign['id']; ?>" class="btn-view">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+            <?php
+                }
+            } else {
+                echo "<p>No campaigns available at the moment.</p>";
+            }
+            ?>
         </div>
+        <button class="arrow-right" onclick="nextCards()">→</button>
     </div>
 </section>
+
 
 <!-- How It Works Section -->
 <section class="how-it-works">
@@ -260,6 +434,52 @@ include('includes/navbar.php');
         </div>
     </div>
 </section>
+
+<script>
+    let currentIndex = 0;
+    const cardsToShow = 3; // Number of cards visible at a time
+    const campaignWrapper = document.querySelector(".campaign-wrapper");
+    const campaignCards = Array.from(document.querySelectorAll(".campaign-card")); // Convert NodeList to Array
+
+    function updateCardDisplay(direction = null) {
+        const totalCards = campaignCards.length;
+        const visibleCards = campaignCards.slice(currentIndex, currentIndex + cardsToShow);
+
+        // Add animation classes based on the direction
+        campaignCards.forEach((card, index) => {
+            card.style.display = "none"; // Hide all cards initially
+            card.classList.remove("slide-in-left", "slide-in-right"); // Reset animation classes
+            if (visibleCards.includes(card)) {
+                card.style.display = "block"; // Show visible cards
+                if (direction === "next") card.classList.add("slide-in-right");
+                if (direction === "prev") card.classList.add("slide-in-left");
+            }
+        });
+
+        // Enable/Disable navigation arrows
+        document.querySelector(".arrow-left").disabled = currentIndex === 0;
+        document.querySelector(".arrow-right").disabled =
+            currentIndex + cardsToShow >= totalCards;
+    }
+
+    function nextCards() {
+        const totalCards = campaignCards.length;
+        if (currentIndex + cardsToShow < totalCards) {
+            currentIndex++;
+            updateCardDisplay("next");
+        }
+    }
+
+    function prevCards() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCardDisplay("prev");
+        }
+    }
+
+    // Initialize the card display
+    updateCardDisplay();
+</script>
 
 <?php
 include('includes/footer.php');

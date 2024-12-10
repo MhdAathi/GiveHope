@@ -109,9 +109,9 @@
                     Dashboard
                 </a>
                 <div class="sb-sidenav-menu-heading">Admin Management</div>
-                <a class="nav-link" href="viewregister.php">
+                <a class="nav-link" href="campaigns.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
-                    Manage Users
+                    Campaigns
                 </a>
                 <a class="nav-link" href="driver_details.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-truck"></i></div>

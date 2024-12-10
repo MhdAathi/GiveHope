@@ -163,7 +163,6 @@ include('includes/navbar.php');
     }
 </style>
 
-
 <div class="login-container">
     <div class="login-card">
         <div class="card-header text-center">

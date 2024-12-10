@@ -147,9 +147,12 @@
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-white" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown">
-                <!-- <?= $_SESSION['auth_user']['user_name'] ?> <i class="fas fa-user fa-fw"></i> -->
+                <?= $_SESSION['auth_user']['user_name'] ?> <i class="fas fa-user fa-fw"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a href="../index.php" class="dropdown-item">Home</a>
+                </li>
                 <li>
                     <form action="../all_code.php" method="POST">
                         <button type="submit" name="logout_btn" class="dropdown-item">Logout</button>

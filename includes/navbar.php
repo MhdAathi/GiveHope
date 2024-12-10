@@ -3,6 +3,7 @@
     body {
         margin: 0;
     }
+
     /* Navbar */
     .navbar {
         /* Increased blur for a more modern feel */
@@ -133,20 +134,38 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav ">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Home</a>
+                    <a class="nav-link" href="index.php">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Donate</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Campaigns</a>
+                    <a class="nav-link" href="create_campaign.php">Campaigns</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Volunteer</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link cta-button" href="#">Sign Up</a>
-                </li>
+                <?php if (isset($_SESSION['auth_user'])) : ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?= $_SESSION['auth_user']['user_name'] ?>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form action="all_code.php" method="POST">
+                                    <button type="submit" name="logout_btn" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                            <li>
+                                <a href="admin/index.php" class="dropdown-item">Dashboard</a>
+                            </li>
+                        </ul>
+                    </li>
+                <?php else : ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.php">Sign-Up</a>
+                    </li>
+                <?php endif; ?>
             </ul>
         </div>
     </div>

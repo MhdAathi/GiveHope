@@ -1,5 +1,5 @@
 <?php
-//include('authentication.php');
+include('authentication.php');
 include('includes/header.php');
 //include('dashboard_fetching.php');
 ?>
