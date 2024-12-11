@@ -5,8 +5,6 @@ include('includes/navbar.php');
 ?>
 
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap");
-
     .form-section {
         padding: 40px 0;
     }
@@ -70,7 +68,6 @@ include('includes/navbar.php');
         box-shadow: 0 0 5px rgba(69, 123, 157, 0.5);
     }
 
-
     .side-by-side {
         display: flex;
         gap: 20px;
@@ -98,7 +95,6 @@ include('includes/navbar.php');
         width: 100%;
         background-color: #f9f9f9;
     }
-
 
     .btn-block {
         display: block;

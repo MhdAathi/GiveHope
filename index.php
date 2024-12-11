@@ -5,6 +5,11 @@ include('includes/navbar.php');
 ?>
 
 <style>
+    /* Enable smooth scrolling across the page */
+    html {
+        scroll-behavior: smooth;
+    }
+
     /* Hero Section */
     .hero {
         background: linear-gradient(to right, #1d3557, #457b9d);
@@ -345,12 +350,12 @@ include('includes/navbar.php');
         <h1>Support the Cause, Make a Difference</h1>
         <p>Join hands with us in supporting global campaigns that create change.</p>
         <a href="create_campaign.php" class="btn btn-light">Create Campaign</a>
-        <a href="#" class="btn btn-outline-light">Donate Now</a>
+        <a href="#campaigns-section" class="btn btn-outline-light">Donate Now</a>
     </div>
 </section>
 
 <!-- Campaigns Section -->
-<section class="campaigns">
+<section class="campaigns" id="campaigns-section">
     <div class="campaign-wrapper-container">
         <button class="arrow-left" onclick="prevCards()">←</button>
         <div class="campaign-wrapper">
@@ -403,7 +408,6 @@ include('includes/navbar.php');
         <button class="arrow-right" onclick="nextCards()">→</button>
     </div>
 </section>
-
 
 <!-- How It Works Section -->
 <section class="how-it-works">

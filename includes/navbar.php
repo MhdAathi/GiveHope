@@ -1,6 +1,7 @@
 <style>
     html,
     body {
+        padding: 0;
         margin: 0;
     }
 
@@ -50,7 +51,7 @@
 
     .navbar .navbar-nav .nav-link:focus,
     .navbar .navbar-nav .nav-link:hover {
-        color: #1D3557;
+        color: #fff;
         /* Hover color */
     }
 
@@ -60,7 +61,7 @@
         display: block;
         width: 0;
         height: 2px;
-        background: #1D3557;
+        background: #fff;
         transition: width 0.3s;
         position: absolute;
         bottom: -5px;

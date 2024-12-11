@@ -1,14 +1,23 @@
 <style>
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap");
+
+    /* Global Styles */
+    * {
+        font-family: "Montserrat", sans-serif;
+        margin: 0%;
+        padding: 0%;
+    }
+
     /* Navbar */
     .sb-topnav {
-        background: linear-gradient(135deg, #dc3545, #c82333);
+        background: linear-gradient(100deg, #457b9d, #1d3557);
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         padding: 0.5rem 1rem;
         transition: background-color 0.3s ease;
     }
 
     .sb-topnav:hover {
-        background: linear-gradient(135deg, #c82333, #dc3545);
+        background: linear-gradient(135deg, #1d3557, #457b9d);
     }
 
     /* Navbar Brand */
@@ -22,12 +31,12 @@
     }
 
     .sb-topnav .navbar-brand span {
-        color: #000;
+        color: #fff;
         font-weight: bold;
     }
 
     .sb-topnav .navbar-brand:hover {
-        color: #ffcc00;
+        color: #000;
     }
 
     .sb-topnav .navbar-brand span:hover {
@@ -43,7 +52,7 @@
     }
 
     #sidebarToggle:hover {
-        color: #ffcc00;
+        color: #000;
     }
 
     /* Navbar Links */
@@ -79,7 +88,7 @@
 
     /* Dropdown Menu */
     .sb-topnav .dropdown-menu {
-        background-color: #dc3545;
+        background-color: #1d3557;
         border: none;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -106,12 +115,12 @@
 
     .sb-topnav .form-inline .form-control:focus {
         box-shadow: none;
-        border-color: #ffcc00;
+        border-color: #1d3557;
     }
 
     .sb-topnav .form-inline .btn {
-        background-color: #ffcc00;
-        color: #dc3545;
+        background-color: #000;
+        color: #fff;
         border: none;
         border-radius: 20px;
         padding: 0.5rem 1rem;
@@ -120,15 +129,15 @@
     }
 
     .sb-topnav .form-inline .btn:hover {
-        background-color: #e6b800;
-        color: #ffffff;
+        background-color: #1d3557;
+        color: #fff;
     }
 </style>
 
-<nav class="sb-topnav navbar navbar-expand navbar-dark">
+<nav class="sb-topnav navbar navbar-expand">
     <!-- Navbar Brand -->
     <a class="navbar-brand ps-3" href="../index.php">
-        <span>BLOOD</span>HUB
+        <span>GIVE</span>HOPE
     </a>
     <!-- Sidebar Toggle -->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">

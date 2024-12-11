@@ -56,6 +56,16 @@
             text-align: center;
         }
 
+        h4 {
+            font-size: 35px;
+            font-weight: 600;
+            color: #0C120C;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         p {
             font-size: 16px;
             line-height: 1.5;
