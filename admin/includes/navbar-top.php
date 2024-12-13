@@ -132,13 +132,30 @@
         background-color: #1d3557;
         color: #fff;
     }
+
+    .navbar-logo {
+        width: 40px;
+        /* Set the width to fit the logo size */
+        height: 40px;
+        /* Ensure the height stays the same */
+        object-fit: contain;
+        /* Ensures the logo maintains aspect ratio without distortion */
+        border-radius: 50%;
+        /* Makes the logo circular if it’s square */
+        background-color: transparent;
+        /* Ensures the background is transparent */
+        margin-right: 10px;
+        /* Adds space between logo and text */
+    }
 </style>
 
 <nav class="sb-topnav navbar navbar-expand">
     <!-- Navbar Brand -->
     <a class="navbar-brand ps-3" href="../index.php">
+        <img src="../assets/images/logo.jpg" alt="" class="navbar-logo">
         <span>GIVE</span>HOPE
     </a>
+
     <!-- Sidebar Toggle -->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">
         <i class="fas fa-bars"></i>

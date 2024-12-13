@@ -120,14 +120,30 @@
             margin-bottom: 10px;
         }
     }
+
+    .navbar-logo {
+        width: 40px;
+        /* Set the width to fit the logo size */
+        height: 40px;
+        /* Ensure the height stays the same */
+        object-fit: contain;
+        /* Ensures the logo maintains aspect ratio without distortion */
+        border-radius: 50%;
+        /* Makes the logo circular if it’s square */
+        background-color: transparent;
+        /* Ensures the background is transparent */
+        margin-right: 10px;
+        /* Adds space between logo and text */
+    }
 </style>
 
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="pics/5.png" alt="">
+        <a class="navbar-brand" href="index.php">
+            <img src="assets/images/logo.jpg" alt="GiveHope Logo" class="navbar-logo">
             GiveHope
         </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

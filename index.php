@@ -394,7 +394,6 @@ include('includes/navbar.php');
                             </div>
                             <div class="campaign-actions">
                                 <a href="donate.php?id=<?= $campaign['id']; ?>" class="btn-donate">Donate Now</a>
-                                <a href="view_campaign.php?id=<?= $campaign['id']; ?>" class="btn-view">View Details</a>
                             </div>
                         </div>
                     </div>

@@ -82,9 +82,9 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
                     Campaigns
                 </a>
-                <a class="nav-link" href="driver_details.php">
+                <a class="nav-link" href="donor_history.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-truck"></i></div>
-                    Driver Management
+                    Donor History
                 </a>
 
                 <div class="sb-sidenav-menu-heading">Staff Operations</div>
@@ -114,7 +114,7 @@
         </div>
         <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>
-            <!-- <strong><?= $_SESSION['auth_user']['user_name'] ?></strong> -->
+            <strong><?= $_SESSION['auth_user']['user_name'] ?></strong>
         </div>
     </nav>
 </div>
