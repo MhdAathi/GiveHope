@@ -176,7 +176,7 @@ include('includes/navbar.php');
                 <div class="form-group">
                     <div class="side-by-side">
                         <div class="input-item">
-                            <label for="campaign_goal">Fundraising Goal (in USD) <span style="color: red;">*</span></label>
+                            <label for="campaign_goal">Fundraising Goal (in LKR) <span style="color: red;">*</span></label>
                             <input type="number" id="campaign_goal" name="campaign_goal" required placeholder="Enter goal amount" min="1">
                         </div>
 
@@ -205,6 +205,14 @@ include('includes/navbar.php');
                             <label for="end_date">End Date <span style="color: red;">*</span></label>
                             <input type="date" id="end_date" name="end_date" required>
                         </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-item">
+                        <label for="campaign_document">Upload Supporting Document (evidence) <span style="color: red;">*</span></label>
+                        <input type="file" id="campaign_document" name="campaign_document" required accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                        <span class="note">Accepted formats: PDF, DOC, DOCX, JPG, PNG</span>
                     </div>
                 </div>
 

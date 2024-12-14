@@ -7,21 +7,22 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
 ?>
 
 <style>
-    /* Custom table styles */
     #campaignDetailsTable th:nth-child(4),
-    /* Description column */
+    /* Target the Description column header */
     #campaignDetailsTable td:nth-child(4) {
+        /* Target the Description column data */
+        width: 200px;
+        /* Set a fixed width */
         max-width: 200px;
-        /* Set a maximum width */
+        /* Ensure it doesn't exceed this width */
         white-space: normal;
         /* Allow text wrapping */
         word-wrap: break-word;
-        /* Break long words into multiple lines */
+        /* Break long words to fit within the width */
         overflow: hidden;
-        /* Prevent overflow */
+        /* Prevent content overflow */
     }
 </style>
-
 
 <div class="container-fluid px-4">
     <h3 class="mt-4">Campaign Details</h3>
@@ -61,7 +62,7 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                         </div>
                     </div>
 
-                    <table class="table table-bordered table-striped" id="campaignDetailsTable">
+                    <table class="table table-bordered" id="campaignDetailsTable">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -70,6 +71,7 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                                 <th>Description</th>
                                 <th>Goal</th>
                                 <th>Category</th>
+                                <th>Document</th> <!-- New Document Column -->
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th>Organizer Name</th>
@@ -94,6 +96,19 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                                             <td><?= htmlspecialchars($row['description']); ?></td>
                                             <td><?= htmlspecialchars($row['goal']); ?></td>
                                             <td><?= htmlspecialchars($row['category']); ?></td>
+
+                                            <!-- New Document Column -->
+                                            <td>
+                                                <?php if (!empty($row['document'])): ?>
+                                                    <a href="<?= htmlspecialchars($row['document']); ?>" download title="Download Document">
+                                                        <i class="fas fa-file-download text-primary" style="font-size: 1.5rem;"></i>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="text-muted">No Document</span>
+                                                <?php endif; ?>
+                                            </td>
+
+
                                             <td><?= htmlspecialchars($row['start_date']); ?></td>
                                             <td><?= htmlspecialchars($row['end_date']); ?></td>
                                             <td><?= htmlspecialchars($row['organizer_name']); ?></td>
@@ -116,33 +131,39 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                                                 <form action="admin_all_code.php" method="POST">
                                                     <input type="hidden" name="campaign_id" value="<?= $row['id']; ?>">
                                                     <?php if ($row['status'] == 'Pending'): ?>
-                                                        <button type="submit" name="accept_btn" class="btn btn-success btn-sm" title="Accept"><i class="fas fa-check"></i> Accept</button>
-                                                        <button type="submit" name="reject_btn" class="btn btn-danger btn-sm" title="Reject"><i class="fas fa-times"></i> Reject</button>
+                                                        <button type="submit" name="accept_btn" class="btn btn-success btn-sm" title="Accept">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                        <button type="submit" name="reject_btn" class="btn btn-danger btn-sm" title="Reject">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
                                                     <?php elseif ($row['status'] == 'Accepted'): ?>
                                                         <!-- Show Edit and Delete buttons if status is Accepted -->
-                                                        <a href="edit_campaign.php?id=<?= $row['id']; ?>" class="btn btn-warning btn-sm" title="Edit"><i class="fas fa-edit"></i> Edit</a>
-                                                        <button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="confirmDelete(<?= $row['id']; ?>)">
-                                                            <i class="fas fa-trash"></i> Delete
+                                                        <a href="edit_campaign.php?id=<?= htmlspecialchars($row['id']); ?>" class="btn btn-warning btn-sm" title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <button type="button" class="btn btn-danger btn-sm" title="Delete">
+                                                            <i class="fas fa-trash"></i>
                                                         </button>
-
                                                     <?php endif; ?>
                                                 </form>
                                             </td>
-
                                         </tr>
                             <?php
                                     }
                                 } else {
                                     // If no records found
-                                    echo '<tr><td colspan="11">No Record Found for ' . ($campaign_category ? $campaign_category : 'all categories') . '!</td></tr>';
+                                    echo '<tr><td colspan="12">No Record Found for ' . ($campaign_category ? $campaign_category : 'all categories') . '!</td></tr>';
                                 }
                             } else {
                                 // Handle query execution failure
-                                echo '<tr><td colspan="11">Error fetching records: ' . htmlspecialchars(mysqli_error($con)) . '</td></tr>';
+                                echo '<tr><td colspan="12">Error fetching records: ' . htmlspecialchars(mysqli_error($con)) . '</td></tr>';
                             }
                             ?>
                         </tbody>
                     </table>
+
+
                 </div>
             </div>
         </div>

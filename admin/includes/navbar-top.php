@@ -31,7 +31,7 @@
     }
 
     .sb-topnav .navbar-brand span {
-        color: #fff;
+        color: #000;
         font-weight: bold;
     }
 
@@ -144,8 +144,9 @@
         /* Makes the logo circular if it’s square */
         background-color: transparent;
         /* Ensures the background is transparent */
-        margin-right: 10px;
+        margin-right: 0.px;
         /* Adds space between logo and text */
+        align-items: center;
     }
 </style>
 

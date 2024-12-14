@@ -132,7 +132,7 @@
         /* Makes the logo circular if it’s square */
         background-color: transparent;
         /* Ensures the background is transparent */
-        margin-right: 10px;
+        margin-right: 03px;
         /* Adds space between logo and text */
     }
 </style>

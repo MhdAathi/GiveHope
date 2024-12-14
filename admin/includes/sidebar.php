@@ -1,20 +1,16 @@
 <style>
     /* Sidebar Styles */
-    .sidenav-hidden {
-        display: none;
-    }
-
     #layoutSidenav_nav {
         width: 300px;
-        /* Change this to your desired width */
+        /* Increased sidebar width */
         background: #2c3e50;
         transition: transform 0.3s ease-in-out;
     }
 
     #layoutSidenav_content {
         margin-left: 300px;
-        /* Change this to match the new width */
-        transition: margin-left 0.3s;
+        /* Adjust content margin to match sidebar width */
+        transition: margin-left 0.3s ease-in-out;
     }
 
     .sb-sidenav {
@@ -33,9 +29,8 @@
     .sb-sidenav .nav-link {
         color: #ecf0f1;
         padding: 15px 20px;
-        display: block;
         text-decoration: none;
-        transition: background-color 0.2s;
+        transition: background-color 0.2s ease;
     }
 
     .sb-sidenav .nav-link:hover {
@@ -59,62 +54,61 @@
         padding: 15px 20px;
         font-size: 0.875rem;
     }
-
-    .sidebar-visible #layoutSidenav_content {
-        margin-left: 0;
-    }
-
-    .sidebar-hidden #layoutSidenav_content {
-        margin-left: 250px;
-    }
 </style>
 
-<div id="layoutSidenav_nav" class="sidebar-hidden">
+<div id="layoutSidenav_nav">
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
         <div class="sb-sidenav-menu">
             <div class="nav">
-                <a class="nav-link mt-5" href="index.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tint"></i></div>
+                <!-- Dashboard -->
+                <div class="sb-sidenav-menu-heading"></div>
+                <a class="nav-link mt-4" href="index.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Dashboard
                 </a>
-                <div class="sb-sidenav-menu-heading">Admin Management</div>
+
+                <!-- Campaign Management -->
+                <div class="sb-sidenav-menu-heading">Campaign Management</div>
                 <a class="nav-link" href="campaigns.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
-                    Campaigns
+                    <div class="sb-nav-link-icon"><i class="fas fa-bullhorn"></i></div>
+                    Manage Campaigns
                 </a>
-                <a class="nav-link" href="donor_history.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-truck"></i></div>
-                    Donor History
-                </a>
-
-                <div class="sb-sidenav-menu-heading">Staff Operations</div>
-                <a class="nav-link" href="blood_requests.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-hand-holding-heart"></i></div>
-                    View Blood Requests
-                </a>
-                <a class="nav-link" href="donor_history.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-book-medical"></i></div>
-                    Access Donor History
-                </a>
-                <a class="nav-link" href="blood_inventory.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tint"></i></div>
-                    Check Blood Inventory
+                <a class="nav-link" href="donations_per_campaign.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-donate"></i></div>
+                    Donations Per Campaign
                 </a>
 
-                <div class="sb-sidenav-menu-heading">Generate Reports</div>
-                <a class="nav-link" href="blood_donation_report.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
-                    Blood Receive
+                <!-- Donations -->
+                <div class="sb-sidenav-menu-heading">Donations</div>
+                <a class="nav-link" href="donations_history.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                    Donation History
                 </a>
+                <a class="nav-link" href="donors.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                    Donor Management
+                </a>
+
+                <!-- User and Admin Operations -->
+                <div class="sb-sidenav-menu-heading">User Management</div>
+                <a class="nav-link" href="manage_users.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                    Manage Users
+                </a>
+
+                <!-- Reports -->
+                <div class="sb-sidenav-menu-heading">Reports</div>
                 <a class="nav-link" href="blood_dispatch_report.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-chart-pie"></i></div>
-                    Blood Dispatch
+                    <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                    Generate Reports
                 </a>
             </div>
         </div>
+
+        <!-- Footer Section -->
         <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>
-            <strong><?= $_SESSION['auth_user']['user_name'] ?></strong>
+            <strong><?= htmlspecialchars($_SESSION['auth_user']['user_name']); ?></strong>
         </div>
     </nav>
 </div>

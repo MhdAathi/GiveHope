@@ -94,21 +94,25 @@ include('includes/navbar.php');
     }
 
     .campaign-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         width: 100%;
         max-width: 350px;
+        /* Keep a consistent width */
+        height: 480px;
+        /* Set a fixed height for all cards */
         background: #f8f9fa;
         border-radius: 12px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        transition: opacity 0.5s ease, transform 0.5s ease;
+        margin: auto;
     }
 
     .campaign-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
     }
 
     .campaign-header {
@@ -121,7 +125,7 @@ include('includes/navbar.php');
         left: 10px;
         background: green;
         color: white;
-        font-size: 12px;
+        font-size: 10px;
         font-weight: bold;
         padding: 3px 8px;
         border-radius: 5px;
@@ -131,19 +135,22 @@ include('includes/navbar.php');
     .campaign-header .campaign-image {
         width: 100%;
         height: 180px;
+        /* Ensure consistent image height */
         object-fit: cover;
+        /* Maintain aspect ratio while filling the container */
     }
 
     .campaign-body {
         padding: 15px;
-        flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        flex-grow: 1;
+        /* Ensure content fills available space */
     }
 
     .campaign-title {
-        font-size: 1.2rem;
+        font-size: 15px;
         font-weight: bold;
         color: #333;
         margin-bottom: 8px;
@@ -168,6 +175,11 @@ include('includes/navbar.php');
     }
 
     .campaign-progress {
+        margin-top: auto;
+        /* Push progress bar to the bottom of the card */
+    }
+
+    .campaign-progress {
         position: relative;
         background: #f0f0f0;
         border-radius: 5px;
@@ -184,10 +196,10 @@ include('includes/navbar.php');
     }
 
     .campaign-stats p {
-        font-size: 12px;
         margin: 0;
         line-height: 1.2;
-        margin-bottom: 15px;
+        font-size: 12px;
+        margin-bottom: 10px;
     }
 
     .campaign-actions {
@@ -200,15 +212,15 @@ include('includes/navbar.php');
         color: white;
     }
 
-    .btn-donate,
-    .btn-view {
-        text-decoration: none;
+    /* Make buttons consistent in size */
+    .btn-donate {
+        padding: 10px 15px;
         font-size: 14px;
-        font-weight: 500%;
-        padding: 8px 15px;
-        border-radius: 20px;
+        font-weight: 400%;
+        border-radius: 25px;
         text-align: center;
         flex: 1;
+        text-decoration: none;
     }
 
     .btn-donate {
@@ -226,19 +238,24 @@ include('includes/navbar.php');
         opacity: 0.9;
     }
 
+    /* Align the arrows for navigation */
     .arrow-left,
     .arrow-right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         background: #1d3557;
         color: #fff;
         border: none;
-        padding: 10px 15px;
-        font-size: 20px;
+        padding: 10px;
+        font-size: 18px;
         font-weight: bold;
         border-radius: 50%;
         cursor: pointer;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         width: 50px;
         height: 50px;
+        transition: transform 0.3s ease;
     }
 
     .arrow-left:hover,
@@ -370,23 +387,26 @@ include('includes/navbar.php');
                     // Calculate progress
                     $progress = ($campaign['raised'] / $campaign['goal']) * 100;
             ?>
-                    <div class="campaign-card">
+                    <div class="campaign-card" onclick="window.location.href='donate.php?id=<?= $campaign['id']; ?>';" style="cursor: pointer;">
                         <div class="campaign-header">
                             <div class="verified-badge">
                                 <span>✔ Verified</span>
                             </div>
                             <img src="<?= htmlspecialchars($campaign['image']); ?>" alt="<?= htmlspecialchars($campaign['title']); ?>" class="campaign-image">
                         </div>
+
                         <div class="campaign-body">
                             <h3 class="campaign-title"><?= htmlspecialchars($campaign['title']); ?></h3>
                             <div class="campaign-meta">
                                 <span class="campaign-location"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($campaign['location']); ?></span>
                                 <span class="campaign-category"><?= htmlspecialchars($campaign['category']); ?></span>
                             </div>
-                            <p class="campaign-description"><?= htmlspecialchars(substr($campaign['description'], 0, 100)) . '...'; ?></p>
+                            <p class="campaign-description">
+                                <?= htmlspecialchars(substr($campaign['description'], 0, 50)) . '...'; ?>
+                                <a href="donate.php?id=<?= $campaign['id']; ?>" class="see-more">See More</a>
+                            </p>
                             <div class="campaign-progress">
                                 <div class="progress-bar" style="width: <?= round($progress, 2); ?>%;"></div>
-                                <span class="progress-text"><?= round($progress, 2); ?>%</span>
                             </div>
                             <div class="campaign-stats">
                                 <p><strong>Raised:</strong> LKR <?= number_format($campaign['raised'], 2); ?></p>
