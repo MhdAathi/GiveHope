@@ -69,33 +69,30 @@
 
                 <!-- Campaign Management -->
                 <div class="sb-sidenav-menu-heading">Campaign Management</div>
-                <a class="nav-link" href="campaigns.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-bullhorn"></i></div>
-                    Manage Campaigns
-                </a>
                 <a class="nav-link" href="donations_per_campaign.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-donate"></i></div>
                     Donations Per Campaign
                 </a>
-
-                <!-- Donations -->
-                <div class="sb-sidenav-menu-heading">Donations</div>
                 <a class="nav-link" href="donations_history.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-hand-holding-usd"></i></div>
                     Donation History
                 </a>
+                
+                <!-- Admin Operations -->
+                <div class="sb-sidenav-menu-heading">Admin Management</div>
                 <a class="nav-link" href="donors.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                     Donor Management
                 </a>
-
-                <!-- User and Admin Operations -->
-                <div class="sb-sidenav-menu-heading">User Management</div>
+                <a class="nav-link" href="campaigns.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-bullhorn"></i></div>
+                    Manage Campaigns
+                </a>
                 <a class="nav-link" href="manage_users.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
                     Manage Users
                 </a>
-
+                
                 <!-- Reports -->
                 <div class="sb-sidenav-menu-heading">Reports</div>
                 <a class="nav-link" href="blood_dispatch_report.php">

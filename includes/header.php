@@ -48,7 +48,7 @@
         }
 
         h2 {
-            font-size: 35px;
+            font-size: 25px;
             font-weight: 600;
             color: #0C120C;
             text-transform: uppercase;

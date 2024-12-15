@@ -2,17 +2,28 @@
 include('authentication.php');
 include('includes/header.php');
 
-// Fetch campaign data along with raised amount
-$query = "
-    SELECT 
-        id AS campaign_id,
-        title AS campaign_name,
-        goal,
-        raised,
-        end_date AS deadline,
-        status
-    FROM campaigns";
-$query_run = mysqli_query($con, $query);
+// Check if the logged-in user is an admin
+if ($_SESSION['auth_user']['user_id'] == 1) {
+    // Admin: Fetch all campaigns
+    $query = "
+        SELECT id AS campaign_id, title AS campaign_name, goal, raised, 
+               end_date AS deadline, user_id 
+        FROM campaigns";
+    $query_run = mysqli_query($con, $query);
+} else {
+    // Campaign creator: Fetch only their campaigns
+    $user_id = $_SESSION['auth_user']['user_id']; // Get the logged-in user's ID
+    $query = "
+        SELECT id AS campaign_id, title AS campaign_name, goal, raised, 
+               end_date AS deadline 
+        FROM campaigns 
+        WHERE user_id = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $query_run = $stmt->get_result();
+}
+
 ?>
 
 <div class="container-fluid px-4">
@@ -29,24 +40,9 @@ $query_run = mysqli_query($con, $query);
 
             <div class="card">
                 <div class="card-header">
-                    <h4>Donations Per Campaign</h4>
+                    <h4>Your Campaigns</h4>
                 </div>
                 <div class="card-body">
-                    <!-- Search Filters -->
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <input type="text" id="searchCampaignName" class="form-control" placeholder="Search by Campaign Name" onkeyup="filterTable()">
-                        </div>
-                        <div class="col-md-3">
-                            <select id="searchStatus" class="form-control" onchange="filterTable()">
-                                <option value="">Select Status</option>
-                                <option value="Pending">Pending</option>
-                                <option value="Raised">Raised</option>
-                                <option value="Expired">Expired</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <table class="table table-bordered table-hover" id="campaignDetailsTable">
                         <thead>
                             <tr>
@@ -56,23 +52,22 @@ $query_run = mysqli_query($con, $query);
                                 <th>Raised Amount</th>
                                 <th>Deadline</th>
                                 <th>Status</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            if ($query_run && mysqli_num_rows($query_run) > 0) {
+                            if ($query_run && $query_run->num_rows > 0) {
                                 foreach ($query_run as $row) {
                                     $status = '';
                                     $current_date = date("Y-m-d");
 
-                                    // Determine status based on conditions
+                                    // Determine status
                                     if ($row['deadline'] < $current_date) {
-                                        $status = 'Expired'; // Deadline has passed
+                                        $status = 'Expired';
                                     } elseif ($row['raised'] >= $row['goal']) {
-                                        $status = 'Raised'; // Goal has been reached
+                                        $status = 'Raised';
                                     } else {
-                                        $status = 'Pending'; // Not yet fully funded
+                                        $status = 'Pending';
                                     }
                             ?>
                                     <tr>
@@ -89,16 +84,11 @@ $query_run = mysqli_query($con, $query);
                                                 <?= $status; ?>
                                             </span>
                                         </td>
-                                        <td>
-                                            <a href="update_campaign.php?id=<?= $row['campaign_id']; ?>" class="btn btn-primary btn-sm" title="Update">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        </td>
                                     </tr>
                             <?php
                                 }
                             } else {
-                                echo '<tr><td colspan="7" class="text-center">No Records Found</td></tr>';
+                                echo '<tr><td colspan="6" class="text-center">No Campaigns Found</td></tr>';
                             }
                             ?>
                         </tbody>
@@ -108,26 +98,5 @@ $query_run = mysqli_query($con, $query);
         </div>
     </div>
 </div>
-
-<script>
-    function filterTable() {
-        const searchCampaignName = document.getElementById('searchCampaignName').value.toLowerCase();
-        const searchStatus = document.getElementById('searchStatus').value.toLowerCase();
-        const table = document.getElementById('campaignDetailsTable');
-        const rows = table.getElementsByTagName('tr');
-
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            const campaignName = row.cells[1].textContent.toLowerCase();
-            const status = row.cells[5].textContent.toLowerCase();
-
-            // Filter rows based on input values
-            const matchesCampaignName = campaignName.includes(searchCampaignName) || !searchCampaignName;
-            const matchesStatus = status.includes(searchStatus) || !searchStatus;
-
-            row.style.display = matchesCampaignName && matchesStatus ? '' : 'none';
-        }
-    }
-</script>
 
 <?php include('includes/footer.php'); ?>

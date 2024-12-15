@@ -13,13 +13,117 @@ if (isset($_POST['logout_btn'])) {
     exit();
 }
 
+// Donation Submission
+if (isset($_POST['btn-submit'])) {
+    // Ensure database connection
+    if (!$con) {
+        die("Database connection failed: " . mysqli_connect_error());
+    }
+
+    // Sanitize and validate inputs
+    $campaign_id = intval($_POST['campaign_id']); // Treat as integer
+    $donor_name = mysqli_real_escape_string($con, $_POST['name_on_card']);
+    $email = mysqli_real_escape_string($con, $_POST['email']);
+    $phone = mysqli_real_escape_string($con, $_POST['phone']);
+    $address = mysqli_real_escape_string($con, $_POST['address_line']);
+    $amount = floatval($_POST['amount']);
+    $payment_type = mysqli_real_escape_string($con, $_POST['payment_type']);
+
+    // Additional fields for credit card payment
+    $card_number = ($payment_type === 'credit_card') ? mysqli_real_escape_string($con, $_POST['card_number']) : null;
+    $card_security_code = ($payment_type === 'credit_card') ? mysqli_real_escape_string($con, $_POST['security_code']) : null;
+    $card_expiration_month = ($payment_type === 'credit_card') ? mysqli_real_escape_string($con, $_POST['expiration_month']) : null;
+    $card_expiration_year = ($payment_type === 'credit_card') ? mysqli_real_escape_string($con, $_POST['expiration_year']) : null;
+
+    // Additional field for PayPal payment
+    $paypal_email = ($payment_type === 'paypal') ? mysqli_real_escape_string($con, $_POST['paypal_email']) : null;
+
+    // Check if campaign exists and is active
+    $stmt = $con->prepare("SELECT id FROM campaigns WHERE id = ? AND status = 'Accepted'");
+    $stmt->bind_param("i", $campaign_id);
+    $stmt->execute();
+    $campaign_result = $stmt->get_result();
+    $stmt->close();
+
+    if ($campaign_result->num_rows === 0) {
+        $_SESSION['message'] = "Campaign not found or unavailable!";
+        header("Location: donate.php?id=" . $campaign_id);
+        exit();
+    }
+
+    // Start database transaction
+    mysqli_begin_transaction($con);
+
+    try {
+        // Insert donation into 'donations' table
+        $insert_donation_query = "
+            INSERT INTO donations 
+            (campaign_id, donor_name, email, phone, address, amount, payment_type, card_number, card_security_code, card_expiration_month, card_expiration_year, paypal_email, donation_date) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        ";
+        $stmt = $con->prepare($insert_donation_query);
+        $stmt->bind_param(
+            "issssdssssss",
+            $campaign_id,
+            $donor_name,
+            $email,
+            $phone,
+            $address,
+            $amount,
+            $payment_type,
+            $card_number,
+            $card_security_code,
+            $card_expiration_month,
+            $card_expiration_year,
+            $paypal_email
+        );
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error inserting donation: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // Update campaign 'raised' amount
+        $update_campaign_query = "UPDATE campaigns SET raised = raised + ? WHERE id = ?";
+        $stmt = $con->prepare($update_campaign_query);
+        $stmt->bind_param("di", $amount, $campaign_id);
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error updating campaign raised amount: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // Commit the transaction
+        mysqli_commit($con);
+
+        // Success message
+        $_SESSION['message'] = "Thank you for your donation!";
+        header("Location: donate.php?id=" . $campaign_id);
+        exit();
+    } catch (Exception $e) {
+        // Rollback on error
+        mysqli_rollback($con);
+
+        // Log error for debugging
+        error_log($e->getMessage());
+
+        // Show error to the user
+        $_SESSION['message'] = "Something went wrong: " . $e->getMessage();
+        header("Location: donate.php?id=" . $campaign_id);
+        exit();
+    }
+}
+
 // Campaign Creation
 if (isset($_POST['create_campaign_btn'])) {
-    // Retrieve form data
+    // Retrieve logged-in user's ID
+    $user_id = $_SESSION['auth_user']['user_id'];
+
+    // Retrieve and sanitize form data
     $campaign_title = mysqli_real_escape_string($con, $_POST['campaign_title']);
     $campaign_location = mysqli_real_escape_string($con, $_POST['campaign_location']);
     $campaign_description = mysqli_real_escape_string($con, $_POST['campaign_description']);
-    $campaign_goal = floatval($_POST['campaign_goal']); // Ensure it's a float
+    $campaign_goal = floatval($_POST['campaign_goal']);
     $campaign_category = mysqli_real_escape_string($con, $_POST['campaign_category']);
     $start_date = mysqli_real_escape_string($con, $_POST['start_date']);
     $end_date = mysqli_real_escape_string($con, $_POST['end_date']);
@@ -28,23 +132,53 @@ if (isset($_POST['create_campaign_btn'])) {
     $organizer_contact = mysqli_real_escape_string($con, $_POST['organizer_contact']);
     $organizer_email_address = mysqli_real_escape_string($con, $_POST['organizer_email_address']);
 
+    // Validate required fields
+    if (
+        empty($campaign_title) || empty($campaign_location) || empty($campaign_description) ||
+        empty($campaign_goal) || empty($campaign_category) || empty($start_date) || empty($end_date)
+    ) {
+        $_SESSION['message'] = "All fields are required!";
+        header("Location: create_campaign.php");
+        exit();
+    }
+
+    // File upload directory
+    $target_dir = "uploads/";
+    if (!is_dir($target_dir)) {
+        mkdir($target_dir, 0777, true); // Create directory if it doesn't exist
+    }
+
+    // File validations
+    $allowed_image_types = ['image/jpeg', 'image/png', 'image/jpg'];
+    $allowed_document_types = ['application/pdf', 'application/msword'];
+    $max_file_size = 2 * 1024 * 1024; // 2 MB
+
     // Handle image upload
     $campaign_image = $_FILES['campaign_image'];
-    $image_name = time() . '_' . basename($campaign_image['name']);
-    $target_dir = "uploads/"; // Ensure this directory exists and has proper write permissions
+    $image_name = time() . '_' . preg_replace("/[^a-zA-Z0-9.]/", "", basename($campaign_image['name']));
     $target_file = $target_dir . $image_name;
 
+    if (!in_array($campaign_image['type'], $allowed_image_types) || $campaign_image['size'] > $max_file_size) {
+        $_SESSION['message'] = "Invalid image type or size. Only JPG, PNG under 2MB allowed.";
+        header("Location: create_campaign.php");
+        exit();
+    }
     if (!move_uploaded_file($campaign_image['tmp_name'], $target_file)) {
         $_SESSION['message'] = "Error uploading image.";
         header("Location: create_campaign.php");
         exit();
     }
 
-    // Handle supporting document upload
+    // Handle document upload
     $campaign_document = $_FILES['campaign_document'];
-    $document_name = time() . '_doc_' . basename($campaign_document['name']);
+    $document_name = time() . '_doc_' . preg_replace("/[^a-zA-Z0-9.]/", "", basename($campaign_document['name']));
     $document_target_file = $target_dir . $document_name;
 
+    if (!in_array($campaign_document['type'], $allowed_document_types) || $campaign_document['size'] > $max_file_size) {
+        $_SESSION['message'] = "Invalid document type or size. Only PDF, DOC under 2MB allowed.";
+        header("Location: create_campaign.php");
+        exit();
+    }
     if (!move_uploaded_file($campaign_document['tmp_name'], $document_target_file)) {
         $_SESSION['message'] = "Error uploading supporting document.";
         header("Location: create_campaign.php");
@@ -56,8 +190,8 @@ if (isset($_POST['create_campaign_btn'])) {
     $status = 'Pending'; // Default status
     $stmt = $con->prepare("
         INSERT INTO campaigns 
-        (title, location, description, goal, category, start_date, end_date, image, document, organizer_name, contact, email, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (user_id, title, location, description, goal, category, start_date, end_date, image, document, organizer_name, contact, email, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     if (!$stmt) {
@@ -66,9 +200,10 @@ if (isset($_POST['create_campaign_btn'])) {
         exit();
     }
 
-    // Bind and execute
+    // Bind parameters and execute
     $stmt->bind_param(
-        "sssssssssssss",
+        "isssssssssssss",
+        $user_id,
         $campaign_title,
         $campaign_location,
         $campaign_description,
@@ -93,89 +228,4 @@ if (isset($_POST['create_campaign_btn'])) {
     $stmt->close();
     header("Location: create_campaign.php");
     exit();
-}
-
-// Donation Submission
-if (isset($_POST['btn-submit'])) {
-    $campaign_id = intval($_POST['campaign_id']); // Ensure it's treated as an integer
-    $donor_name = mysqli_real_escape_string($con, $_POST['name_on_card']);
-    $email = mysqli_real_escape_string($con, $_POST['email']);
-    $phone = mysqli_real_escape_string($con, $_POST['phone']);
-    $address = mysqli_real_escape_string($con, $_POST['address_line']);
-    $amount = floatval($_POST['amount']); // Convert to a float for safety
-    $payment_type = mysqli_real_escape_string($con, $_POST['payment_type']);
-
-    // Additional fields for credit card payment
-    $card_number = $payment_type === 'credit_card' ? mysqli_real_escape_string($con, $_POST['card_number']) : null;
-    $card_security_code = $payment_type === 'credit_card' ? mysqli_real_escape_string($con, $_POST['security_code']) : null;
-    $card_expiration_month = $payment_type === 'credit_card' ? mysqli_real_escape_string($con, $_POST['expiration_month']) : null;
-    $card_expiration_year = $payment_type === 'credit_card' ? mysqli_real_escape_string($con, $_POST['expiration_year']) : null;
-
-    // Additional field for PayPal payment
-    $paypal_email = $payment_type === 'paypal' ? mysqli_real_escape_string($con, $_POST['paypal_email']) : null;
-
-    // Verify campaign existence
-    $campaign_check_query = "SELECT id FROM campaigns WHERE id = ? LIMIT 1";
-    $stmt = $con->prepare($campaign_check_query);
-    $stmt->bind_param("i", $campaign_id);
-    $stmt->execute();
-    $campaign_result = $stmt->get_result();
-    $stmt->close();
-
-    if ($campaign_result->num_rows == 0) {
-        $_SESSION['message'] = "Campaign not found!";
-        header("Location: donate.php");
-        exit();
-    }
-
-    // Start a transaction
-    mysqli_begin_transaction($con);
-
-    try {
-        // Insert donation
-        $insert_donation_query = "
-            INSERT INTO donations 
-            (campaign_id, donor_name, email, phone, address, amount, payment_type, card_number, card_security_code, card_expiration_month, card_expiration_year, paypal_email, donation_date) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
-        ";
-        $stmt = $con->prepare($insert_donation_query);
-        $stmt->bind_param(
-            "issssdssssss",
-            $campaign_id,
-            $donor_name,
-            $email,
-            $phone,
-            $address,
-            $amount,
-            $payment_type,
-            $card_number,
-            $card_security_code,
-            $card_expiration_month,
-            $card_expiration_year,
-            $paypal_email
-        );
-        if (!$stmt->execute()) {
-            throw new Exception("Failed to insert donation: " . $stmt->error);
-        }
-        $stmt->close();
-
-        // Update campaign raised amount
-        $update_campaign_query = "UPDATE campaigns SET raised = raised + ? WHERE id = ?";
-        $stmt = $con->prepare($update_campaign_query);
-        $stmt->bind_param("di", $amount, $campaign_id);
-        if (!$stmt->execute()) {
-            throw new Exception("Failed to update campaign raised amount: " . $stmt->error);
-        }
-        $stmt->close();
-
-        // Commit the transaction
-        mysqli_commit($con);
-        $_SESSION['message'] = "Thank you for your donation!";
-    } catch (Exception $e) {
-        mysqli_rollback($con);
-        $_SESSION['message'] = "Error: " . $e->getMessage();
-    }
-
-    header("Location: donate.php");
-    exit(0);
 }

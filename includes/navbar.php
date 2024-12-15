@@ -153,15 +153,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="index.php">Home</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="#">Donate</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="create_campaign.php">Campaigns</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Volunteer</a>
-                </li>
+
                 <?php if (isset($_SESSION['auth_user'])) : ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

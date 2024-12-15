@@ -1,5 +1,6 @@
 <?php
-include('admin/authentication.php');
+session_start();
+include('admin/config/dbcon.php');
 include('includes/header.php');
 include('includes/navbar.php');
 ?>
@@ -15,7 +16,7 @@ include('includes/navbar.php');
         background: linear-gradient(to right, #1d3557, #457b9d);
         color: white;
         text-align: center;
-        padding: 100px 0;
+        padding: 150px 0;
         animation: fadeIn 1.5s ease-in-out;
     }
 
@@ -207,9 +208,12 @@ include('includes/navbar.php');
         gap: 10px;
     }
 
-    .btn-donate {
-        background: #28a745;
-        color: white;
+    .see-more {
+        display: inline-block;
+        font-size: 14px;
+        color: #1d3557;
+        text-decoration: none;
+        transition: all 0.3s ease;
     }
 
     /* Make buttons consistent in size */
@@ -224,7 +228,7 @@ include('includes/navbar.php');
     }
 
     .btn-donate {
-        background: #28a745;
+        background: #1d3557;
         color: white;
     }
 
@@ -359,7 +363,165 @@ include('includes/navbar.php');
             opacity: 1;
         }
     }
+
+    /* Testimonials Section */
+    .testimonials {
+        background-color: #f8f8f8;
+        padding: 60px 0;
+        text-align: center;
+    }
+
+    .testimonials h2 {
+        font-size: 2.5rem;
+        color: #1d3557;
+        margin-bottom: 60px;
+    }
+
+    .testimonials-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        flex-wrap: wrap;
+    }
+
+    .testimonial-card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 320px;
+        padding: 20px;
+        position: relative;
+        text-align: left;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .testimonial-header {
+        position: absolute;
+        top: -40px;
+        left: 20px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #f1f1f1;
+        overflow: hidden;
+        border: 5px solid #fff;
+    }
+
+    .person-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .testimonial-body {
+        margin-top: 40px;
+    }
+
+    .client-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #1d3557;
+        margin: 10px 0 5px;
+    }
+
+    .client-role {
+        font-size: 0.9rem;
+        color: #777;
+        margin-bottom: 15px;
+    }
+
+    .testimonial-text {
+        font-size: 1rem;
+        color: #555;
+        line-height: 1.6;
+    }
+
+    .testimonial-footer {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .stars {
+        font-size: 1.5rem;
+        color: #ff7f50;
+        letter-spacing: 2px;
+    }
+
+    .about-us {
+        background: linear-gradient(to left, #1d3557, #457b9d);
+        padding: 60px 0;
+    }
+
+    .about-us h2 {
+        font-size: 2.5rem;
+        color: #f1f1f1;
+        text-align: center;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .about-us p {
+        font-size: 1.2rem;
+        text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .about-us-cards {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+    }
+
+    .about-us-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 250px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .about-us-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .about-us-card h3 {
+        font-size: 1.6rem;
+        color: #1d3557;
+        margin-top: 20px;
+        margin-bottom: 15px;
+    }
+
+    .about-us-card p {
+        font-size: 1rem;
+        color: #666;
+    }
+
+    /* Image styles */
+    .about-img {
+        display: flex;
+        justify-content: center;
+    }
+
+    .about-img img {
+        max-width: 50%;
+        width: 100%;
+        height: auto;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 </style>
+
+<div class="mt-5">
+    <?php include('message.php'); ?>
+</div>
 
 <!-- Hero Section -->
 <section class="hero">
@@ -431,28 +593,124 @@ include('includes/navbar.php');
 <!-- How It Works Section -->
 <section class="how-it-works">
     <div class="container text-center">
-        <h2>How it Works</h2>
+        <h4>How it Works</h4>
         <div class="row">
             <div class="col-md-4">
                 <div class="icon">
                     <i class="bi bi-lightbulb"></i>
                 </div>
-                <h4>Create Campaign</h4>
+                <h2>Create Campaign</h2>
                 <p>Create your campaign and tell your story.</p>
             </div>
             <div class="col-md-4">
                 <div class="icon">
                     <i class="bi bi-wallet2"></i>
                 </div>
-                <h4>Donate</h4>
+                <h2>Donate</h2>
                 <p>Support the cause by donating money.</p>
             </div>
             <div class="col-md-4">
                 <div class="icon">
                     <i class="bi bi-people"></i>
                 </div>
-                <h4>Make a Difference</h4>
+                <h2>Make a Difference</h2>
                 <p>Your donation helps those in need.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Us Section -->
+<section class="about-us" id="about-us-section">
+    <div class="container">
+        <h2>About Us</h2>
+        <p>We are a dedicated platform committed to making a positive impact by supporting global campaigns and bringing people together for a common cause. Our mission is to create a community that empowers individuals to make meaningful contributions to the world.</p>
+        <div class="about-us-cards">
+            <div class="about-us-card">
+                <div class="about-img">
+                    <img src="assets\images\goal.png" alt="Our Mission">
+                </div>
+                <h3>Our Mission</h3>
+                <p>To support campaigns that create sustainable change.</p>
+            </div>
+            <div class="about-us-card">
+                <div class="about-img">
+                    <img src="assets\images\target.png" alt="Our Vision">
+                </div>
+                <h3>Our Vision</h3>
+                <p>To be a leading platform for social change through collaboration and giving.</p>
+            </div>
+            <div class="about-us-card">
+                <div class="about-img">
+                    <img src="assets\images\binoculars.png" alt="Our Values">
+                </div>
+                <h3>Our Values</h3>
+                <p>Transparency, integrity, and community-driven efforts.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials" id="testimonials-section">
+    <div class="container">
+        <h2>What People Are Saying</h2>
+        <div class="testimonials-wrapper">
+            <!-- Testimonial Card 1 -->
+            <div class="testimonial-card">
+                <div class="testimonial-header">
+                    <img src="assets/images/person01.jpg" alt="Person 1" class="person-image">
+                </div>
+                <div class="testimonial-body">
+                    <h3 class="client-name">Sarah L.</h3>
+                    <p class="client-role">Campaign Creator</p>
+                    <p class="testimonial-text">
+                        "This platform gave me the opportunity to bring awareness to my cause and receive support from people worldwide. It's an amazing way to create change!"
+                    </p>
+                </div>
+                <div class="testimonial-footer">
+                    <div class="stars">
+                        ★★★★★
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial Card 2 -->
+            <div class="testimonial-card">
+                <div class="testimonial-header">
+                    <img src="assets/images/person02.jpg" alt="Person 2" class="person-image">
+                </div>
+                <div class="testimonial-body">
+                    <h3 class="client-name">John D.</h3>
+                    <p class="client-role">Donor</p>
+                    <p class="testimonial-text">
+                        "I donated to a campaign that truly made a difference. It was simple, quick, and I felt like my contribution mattered. Highly recommend!"
+                    </p>
+                </div>
+                <div class="testimonial-footer">
+                    <div class="stars">
+                        ★★★★☆
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial Card 3 -->
+            <div class="testimonial-card">
+                <div class="testimonial-header">
+                    <img src="assets/images/person03.jpg" alt="Person 3" class="person-image">
+                </div>
+                <div class="testimonial-body">
+                    <h3 class="client-name">Emily R.</h3>
+                    <p class="client-role">Supporter</p>
+                    <p class="testimonial-text">
+                        "The community here is fantastic! I love seeing the impact of donations and how the platform keeps everyone engaged."
+                    </p>
+                </div>
+                <div class="testimonial-footer">
+                    <div class="stars">
+                        ★★★★★
+                    </div>
+                </div>
             </div>
         </div>
     </div>

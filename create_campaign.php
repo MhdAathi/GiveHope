@@ -2,6 +2,13 @@
 include('admin/authentication.php');
 include('includes/header.php');
 include('includes/navbar.php');
+
+// Check if user is logged in
+if (!isset($_SESSION['auth_user']['user_id'])) {
+    $_SESSION['message'] = "You need to log in to create a campaign.";
+    header("Location: login.php");
+    exit();
+}
 ?>
 
 <style>

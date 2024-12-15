@@ -2,37 +2,36 @@
 include('authentication.php');
 include('includes/header.php');
 
-// Initialize query variables
-$query = "";
-$result = null;
-
-// Check if donor_name is provided in the URL
-if (isset($_GET['donor_name']) && !empty($_GET['donor_name'])) {
-    $donor_name = $_GET['donor_name'];
-
-    // Fetch donations only for the given donor name
-    $query = "SELECT d.id AS donation_id, d.amount, d.donation_date, d.payment_type, c.id AS campaign_id, c.title AS campaign_name 
-              FROM donations d 
-              JOIN campaigns c ON d.campaign_id = c.id 
-              WHERE d.donor_name = ?";
+// Check if the logged-in user is an admin
+if ($_SESSION['auth_user']['user_id'] == 1) {
+    // Admin: Fetch all donations
+    $query = "
+        SELECT d.id AS donation_id, d.amount, d.donation_date, d.payment_type, 
+               c.id AS campaign_id, c.title AS campaign_name, d.donor_name 
+        FROM donations d 
+        JOIN campaigns c ON d.campaign_id = c.id";
+    $result = mysqli_query($con, $query);
+} else {
+    // Campaign creator: Fetch donations for their campaigns
+    $user_id = $_SESSION['auth_user']['user_id']; // Get the logged-in user's ID
+    $query = "
+        SELECT d.id AS donation_id, d.amount, d.donation_date, d.payment_type, 
+               c.id AS campaign_id, c.title AS campaign_name, d.donor_name 
+        FROM donations d 
+        JOIN campaigns c ON d.campaign_id = c.id 
+        WHERE c.user_id = ?";
     $stmt = $con->prepare($query);
-    $stmt->bind_param("s", $donor_name);
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
-} else {
-    // Fetch all donations if no donor_name is provided
-    $query = "SELECT d.id AS donation_id, d.amount, d.donation_date, d.payment_type, c.id AS campaign_id, c.title AS campaign_name, d.donor_name 
-              FROM donations d 
-              JOIN campaigns c ON d.campaign_id = c.id";
-    $result = mysqli_query($con, $query);
 }
 ?>
 
 <div class="container-fluid px-4">
-    <h3 class="mt-4">Donations <?= isset($donor_name) ? "by " . htmlspecialchars($donor_name) : "List" ?></h3>
+    <h3 class="mt-4">Donation History</h3>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item active">Dashboard</li>
-        <li class="breadcrumb-item active">Donation Details</li>
+        <li class="breadcrumb-item active">Donation History</li>
     </ol>
 
     <div class="row">
@@ -42,7 +41,7 @@ if (isset($_GET['donor_name']) && !empty($_GET['donor_name'])) {
 
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Donation History</h4>
+                    <h4>Donations</h4>
                     <a href="generate_donations_report.php" class="btn btn-primary btn-sm">Generate Report</a>
                 </div>
                 <div class="card-body">
@@ -62,16 +61,16 @@ if (isset($_GET['donor_name']) && !empty($_GET['donor_name'])) {
                             <?php
                             if ($result && mysqli_num_rows($result) > 0) {
                                 while ($row = $result->fetch_assoc()) {
-                                    ?>
+                            ?>
                                     <tr>
                                         <td><?= htmlspecialchars($row['campaign_id']); ?></td>
                                         <td><?= htmlspecialchars($row['campaign_name']); ?></td>
-                                        <td><?= isset($row['donor_name']) ? htmlspecialchars($row['donor_name']) : htmlspecialchars($donor_name); ?></td>
-                                        <td><?= number_format($row['amount'], 2); ?></td>
+                                        <td><?= htmlspecialchars($row['donor_name']); ?></td>
+                                        <td>LKR <?= number_format($row['amount'], 2); ?></td>
                                         <td><?= htmlspecialchars($row['payment_type']); ?></td>
                                         <td><?= htmlspecialchars($row['donation_date']); ?></td>
                                     </tr>
-                                    <?php
+                            <?php
                                 }
                             } else {
                                 echo '<tr><td colspan="6" class="text-center">No Donations Found</td></tr>';
@@ -85,6 +84,4 @@ if (isset($_GET['donor_name']) && !empty($_GET['donor_name'])) {
     </div>
 </div>
 
-<?php
-include('includes/footer.php');
-?>
+<?php include('includes/footer.php'); ?>

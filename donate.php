@@ -7,23 +7,22 @@ include('includes/navbar.php');
 $campaign_id = isset($_GET['id']) ? $_GET['id'] : null;
 
 if ($campaign_id) {
-    // Fetch the campaign details from the database
-    $query = "SELECT * FROM campaigns WHERE id = '$campaign_id' AND status = 'Accepted'";
-    $query_run = mysqli_query($con, $query);
+    $stmt = $con->prepare("SELECT * FROM campaigns WHERE id = ? AND status = 'Accepted'");
+    $stmt->bind_param("i", $campaign_id); // "i" means integer
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if ($query_run && mysqli_num_rows($query_run) > 0) {
-        $campaign = mysqli_fetch_assoc($query_run);
-        // Calculate progress
+    if ($result->num_rows > 0) {
+        $campaign = $result->fetch_assoc();
         $progress = ($campaign['raised'] / $campaign['goal']) * 100;
     } else {
-        // If no campaign found
         $_SESSION['message'] = "Campaign not found or unavailable.";
-        echo "<section><p>Campaign not found or unavailable.</p></section>";
+        header("Location: index.php");
         exit(0);
     }
 } else {
     $_SESSION['message'] = "No campaign selected for donation.";
-    echo "<section><p>No campaign selected for donation.</p></section>";
+    header("Location: index.php");
     exit(0);
 }
 ?>
@@ -131,7 +130,7 @@ if ($campaign_id) {
         display: block;
         height: 100%;
         background-color: #4CAF50;
-        width: <?= round($progress, 2); ?>%;
+
     }
 
     .progress-text {
@@ -267,8 +266,10 @@ if ($campaign_id) {
 <div class="main-container">
     <!-- Campaign Details -->
     <div class="campaign-details">
+        <input type="hidden" name="campaign_id" value="<?= htmlspecialchars($campaign['id']); ?>">
         <h2><?= htmlspecialchars($campaign['title']); ?></h2>
-        <img src="<?= htmlspecialchars($campaign['image']); ?>" alt="<?= htmlspecialchars($campaign['title']); ?>" class="campaign-image">
+        <img src="<?= htmlspecialchars($campaign['image']); ?>" alt="<?= htmlspecialchars($campaign['title']); ?>"
+            class="campaign-image">
         <div class="campaign-info">
             <div class="side-by-side">
                 <p class="left"><strong>Location:</strong> <?= htmlspecialchars($campaign['location']); ?></p>
@@ -280,11 +281,13 @@ if ($campaign_id) {
             </div>
             <p><strong>Description:</strong> <?= htmlspecialchars($campaign['description']); ?></p>
         </div>
+
+        <!-- Progress Bar -->
         <div class="progress-container">
             <div class="progress-bar">
-                <span></span>
+                <span style="width: <?= round($progress, 2); ?>%;"></span>
             </div>
-            <div class="progress-text"><?= round($progress, 2); ?>% of Goal</div>
+            <div class="progress-text"><?= round($progress, 2); ?>% Raised</div>
         </div>
     </div>
 
@@ -297,29 +300,35 @@ if ($campaign_id) {
             <div class="form-group">
                 <label>Select Payment Amount <span style="color: red;">*</span></label>
                 <div class="radio-group">
-                    <input type="radio" id="amount_1000" name="payment_amount" value="1000" onclick="updateAmount(1000)">
+                    <input type="radio" id="amount_1000" name="payment_amount" value="1000"
+                        onclick="updateAmount(1000)">
                     <label for="amount_1000">1000</label>
 
-                    <input type="radio" id="amount_2000" name="payment_amount" value="2000" onclick="updateAmount(2000)">
+                    <input type="radio" id="amount_2000" name="payment_amount" value="2000"
+                        onclick="updateAmount(2000)">
                     <label for="amount_2000">2000</label>
 
-                    <input type="radio" id="amount_5000" name="payment_amount" value="5000" onclick="updateAmount(5000)">
+                    <input type="radio" id="amount_5000" name="payment_amount" value="5000"
+                        onclick="updateAmount(5000)">
                     <label for="amount_5000">5000</label>
 
-                    <input type="radio" id="amount_custom" name="payment_amount" value="custom" onclick="enableCustomAmount()">
+                    <input type="radio" id="amount_custom" name="payment_amount" value="custom"
+                        onclick="enableCustomAmount()">
                     <label for="amount_custom">Other</label>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="amount_display">Amount to Pay</label>
-                <input type="text" id="amount_display" name="amount" readonly placeholder="Amount will be displayed here">
+                <input type="text" id="amount_display" name="amount" readonly
+                    placeholder="Amount will be displayed here">
             </div>
 
             <!-- Custom Amount Input -->
             <div class="form-group" id="custom_amount_group" style="display: none;">
                 <label for="custom_amount">Enter Custom Amount</label>
-                <input type="number" id="custom_amount" name="custom_amount" placeholder="Enter custom amount" oninput="updateAmountFromInput()" min="1">
+                <input type="number" id="custom_amount" name="custom_amount" placeholder="Enter custom amount"
+                    oninput="updateAmountFromInput()" min="1">
             </div>
 
             <!-- Payment Type Selection -->
@@ -382,7 +391,8 @@ if ($campaign_id) {
 
                 <div class="form-group">
                     <label for="name_on_card">Name on Card <span style="color: red;">*</span></label>
-                    <input type="text" id="name_on_card" name="name_on_card" placeholder="Enter the name on the card" required>
+                    <input type="text" id="name_on_card" name="name_on_card" placeholder="Enter the name on the card"
+                        required>
                 </div>
             </div>
 
@@ -477,4 +487,4 @@ if ($campaign_id) {
 
 </div>
 
-<?php include('includes/footer.php'); ?>
+<?php include('includes/footer.php');

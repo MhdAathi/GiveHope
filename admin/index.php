@@ -1,5 +1,6 @@
 <?php
 include('authentication.php');
+include('middleware\admin_auth.php');
 include('includes/header.php');
 include('dashboard_fetching.php'); // Fetching data for cards and charts
 

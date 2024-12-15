@@ -1,5 +1,6 @@
 <?php
 include('authentication.php');
+include('middleware\admin_auth.php');
 include('includes/header.php');
 ?>
 
