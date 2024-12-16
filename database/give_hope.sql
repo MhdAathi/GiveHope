@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 15, 2024 at 09:09 PM
+-- Generation Time: Dec 16, 2024 at 05:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,14 +52,18 @@ CREATE TABLE `campaigns` (
 --
 
 INSERT INTO `campaigns` (`id`, `user_id`, `title`, `location`, `description`, `goal`, `category`, `start_date`, `end_date`, `image`, `document`, `organizer_name`, `contact`, `email`, `created_at`, `status`, `raised`) VALUES
-(1, NULL, 'Help Build a School', 'Negombo', 'We are raising funds to build a new school in Springfield to provide quality education to underprivileged children. Your support can make a difference!', 50000.00, 'Education', '2023-10-01', '2023-12-12', 'uploads\\1733566297_3924733_12633.jpg', NULL, 'Joe Doe', '+1 (555) 123-4567', 'johndoe@example.com', '2024-12-07 10:11:37', 'Accepted', 10000.00),
-(2, NULL, 'Education for All', 'Colombo', 'Providing education resources for children.', 500000.00, 'Education', '2024-01-01', '2024-03-01', 'uploads/1733843040_blog-3.jpg', NULL, 'Mohamed Aathif', '0769183535', 'aathief01@gmail.com', '2024-12-10 15:04:00', 'Accepted', 1000.00),
+(1, 3, 'Help Build a School', 'Negombo', 'We are raising funds to build a new school in Springfield to provide quality education to underprivileged children. Your support can make a difference!', 50000.00, 'Education', '2023-10-01', '2023-12-12', '..\\uploads\\1733566297_3924733_12633.jpg', NULL, 'Joe Doe', '+1 (555) 123-4567', 'johndoe@example.com', '2024-12-07 10:11:37', 'Accepted', 10000.00),
+(2, 3, 'Education for All', 'Colombo', 'Providing education resources for children.', 500000.00, 'Education', '2024-01-01', '2024-03-01', 'uploads/1733843040_blog-3.jpg', NULL, 'Mohamed Aathif', '0769183535', 'aathief01@gmail.com', '2024-12-10 15:04:00', 'Accepted', 6000.00),
 (3, 2, 'Clean Water Initiative', 'Galle', 'Ensuring clean drinking water for villages.', 1000000.00, 'Environment', '2025-02-05', '2025-05-05', 'uploads/1733843266_slide-2.jpg', NULL, 'Jane Smith', '07714572157', 'janesmith@example.com', '2024-12-10 15:07:46', 'Accepted', 6000.00),
-(4, NULL, 'Emergency Health Support', 'Kandy', 'Supporting emergency health services.', 750000.00, 'Health', '2025-03-05', '2025-08-05', 'uploads/1733843483_about.jpg', NULL, 'Mark Johnson', '0778413114', 'markjohnson@example.com', '2024-12-10 15:11:23', 'Accepted', 750000.00),
-(5, NULL, 'Medical Aid for the Uninsured', 'Kandy', 'Support our mission to provide medical assistance to uninsured families. Donations will be used to cover basic check-ups, emergency care, and medications for those in need.', 25000.00, 'Health', '2025-01-15', '2025-04-10', 'uploads/1734163032_WhatsApp Image 2024-12-13 at 23.03.30_808ac906.jpg', NULL, 'Jane Smith', '+1-555-987-6543', 'jane.smith@example.com', '2024-12-14 07:57:12', 'Accepted', 0.00),
-(6, NULL, 'Help Build a Library', 'Colombo, Sri Lanka', 'We aim to build a community library in Colombo to support underprivileged students with free access to books and learning materials. Your contributions will go towards construction, furniture, and stocking the library with books', 500000.00, 'Education', '2024-12-25', '2025-02-15', 'uploads/1734181547_blog-inside-post.jpg', 'uploads/1734181547_doc_Campaign-Planning-Templates-2023.pdf', 'Mohamed  Raazim', '0776754323', 'raazimramzan@gmail.com', '2024-12-14 13:05:47', 'Accepted', 0.00),
-(7, NULL, 'Medical Aid for the Uninsured', 'Galle', 'Providing essential medical aid to uninsured families in rural areas of Galle. The funds will be used to purchase medicines, conduct medical camps, and support local healthcare initiatives.', 60000.00, 'Health', '2025-01-25', '2025-03-25', 'uploads/1734289697_about.jpg', 'uploads/1734289697_doc_Ahamed Asrak Mohamed Aathif- Software Engineer Intern.pdf.pdf', 'Nimal Perera', '077 123 4567', 'nimal.perera@example.com', '2024-12-15 19:08:17', 'Accepted', 0.00),
-(8, 2, 'Clean Drinking Water for Rural Villages', 'Anuradhapura', 'This campaign aims to provide clean and safe drinking water to underserved villages in Anuradhapura. Funds will be used to install water purification systems and wells to ensure access to clean water.', 750000.00, 'Environment', '2025-02-15', '2025-02-15', 'uploads/1734290330_slide1.jpg', 'uploads/1734290330_doc_AhamedAsrakMohamedAathifSoftwareEngineerIntern.pdf.pdf', 'Kavindu  Fernando', '076 345 6789', 'kavindu.fernando@example.com', '2024-12-15 19:18:50', 'Accepted', 0.00);
+(4, 4, 'Emergency Health Support', 'Kandy', 'Supporting emergency health services.', 750000.00, 'Health', '2025-03-05', '2025-08-05', 'uploads/1733843483_about.jpg', NULL, 'Mark Johnson', '0778413114', 'markjohnson@example.com', '2024-12-10 15:11:23', 'Accepted', 750000.00),
+(5, 4, 'Medical Aid for the Uninsured', 'Kandy', 'Support our mission to provide medical assistance to uninsured families. Donations will be used to cover basic check-ups, emergency care, and medications for those in need.', 25000.00, 'Health', '2025-01-15', '2025-04-10', 'uploads/1734163032_WhatsApp Image 2024-12-13 at 23.03.30_808ac906.jpg', NULL, 'Jane Smith', '+1-555-987-6543', 'jane.smith@example.com', '2024-12-14 07:57:12', 'Accepted', 0.00),
+(7, 3, 'Medical Aid for the Uninsured', 'Galle', 'Providing essential medical aid to uninsured families in rural areas of Galle. The funds will be used to purchase medicines, conduct medical camps, and support local healthcare initiatives.', 60000.00, 'Health', '2025-01-25', '2025-03-25', 'uploads/1734289697_about.jpg', '../uploads/1734289697_doc_Ahamed Asrak Mohamed Aathif- Software Engineer Intern.pdf.pdf', 'Nimal Perera', '077 123 4567', 'nimal.perera@example.com', '2024-12-15 19:08:17', 'Accepted', 0.00),
+(8, 2, 'Clean Drinking Water for Rural Villages', 'Anuradhapura', 'This campaign aims to provide clean and safe drinking water to underserved villages in Anuradhapura. Funds will be used to install water purification systems and wells to ensure access to clean water.', 750000.00, 'Environment', '2025-02-15', '2025-02-15', 'uploads/1734290330_slide1.jpg', 'uploads/1734290330_doc_AhamedAsrakMohamedAathifSoftwareEngineerIntern.pdf.pdf', 'Kavindu  Fernando', '076 345 6789', 'kavindu.fernando@example.com', '2024-12-15 19:18:50', 'Accepted', 0.00),
+(9, 3, 'Save The Sea Turtles Sri Lanka', 'Galle, Sri Lanka', 'Join us in our mission to protect and conserve sea turtles in Sri Lanka. We aim to raise awareness and funds to build a safe sanctuary for endangered turtles and provide education to local communities on how to protect these incredible creatures.', 500000.00, 'Environment', '2025-01-10', '2025-03-20', 'uploads/1734339176_turtle.jpeg', 'uploads/1734339176_doc_CampaignPlanningTemplates2023.pdf', 'Lakshitha Perera', '0771234567', 'lakshitha.perera@example.com', '2024-12-16 08:52:56', 'Accepted', 20000.00),
+(10, 2, 'Treatment Fund for Children', 'Colombo, Sri Lanka', 'Raising funds for medical treatment and care for children diagnosed with cancer at Apeksha Hospital in Maharagama.', 500000.00, '0', '2025-02-05', '2025-05-05', 'uploads/1734356728_image_children.jpeg', 'uploads/1734356728_support_document.jpeg', '', '', '', '2024-12-16 13:45:28', 'Rejected', 0.00),
+(11, 2, 'Rebuild Homes for Flood Victims in Gampaha', 'Gampaha District, Sri Lanka', 'We aim to provide shelter and essential resources for families affected by the recent floods in Gampaha. Your contribution will help rebuild homes, provide food supplies, and bring hope to those in need.', 500000.00, 'Disaster Relief', '2025-02-03', '2025-04-03', 'uploads/1734357934_flood.jpeg', '../uploads/1734357934_doc_document.jpeg', 'Nimal Perera', '077 123 4567', 'nimal.perera@example.com', '2024-12-16 14:05:34', 'Rejected', 0.00),
+(13, 3, 'Clean Drinking Water Project', 'Monaragala District, Sri Lanka', 'Many families in Monaragala suffer due to the lack of clean drinking water. This project aims to provide clean water facilities by installing water purification systems and safe water wells to improve health and hygiene in rural areas.', 100000.00, 'Environment', '2024-12-25', '2025-03-25', '../uploads/1734364609_cleanwater.jpg', '../uploads/1734364609_doc_document.jpeg', 'Ahmed Raazim', '0763939272', 'raazimramzan@gmail.com', '2024-12-16 15:56:49', 'Pending', 0.00),
+(14, 1, 'Empowering Rural Schools with Digital Learning', 'Badulla District', 'This campaign focuses on bridging the digital divide in rural schools by providing laptops, projectors, and internet connectivity. Empowering students with modern learning tools will improve their access to quality education and opportunities.', 750000.00, 'Education', '2025-01-20', '2025-02-20', '../uploads/1734365049_school.jpeg', '../uploads/1734365049_doc_document.jpeg', 'Itachi Uchiha', '0775846781', 'Rameed.gms007@gmail.com', '2024-12-16 16:04:09', 'Accepted', 0.00);
 
 -- --------------------------------------------------------
 
@@ -94,7 +98,9 @@ INSERT INTO `donations` (`id`, `campaign_id`, `donor_name`, `email`, `phone`, `a
 (14, 2, 'aathif', 'aathi@gmail.com', '0769183535', '34/A,danagama,mawanella', 1000.00, 'credit_card', '2121 2121 2121 2121', '212', '08', '2024', '', '2024-12-14 07:39:59'),
 (16, 3, 'aadhil', 'aadhilm@gmail.com', '0769183535', '34/A,danagama,mawanella', 5000.00, 'credit_card', '2121 1212 1212 1212', '212', '06', '2025', NULL, '2024-12-14 07:44:55'),
 (17, 1, 'mohamed', 'MohamedArshak48@gmail.com', '0769183535', '34/A, Danagama Mawanella Danagama', 10000.00, 'credit_card', '2121 2112 1121 2121', '212', '09', '2026', NULL, '2024-12-14 07:52:11'),
-(18, 3, 'rahmath', 'ramath@gmail.com', '0769183535', '34/A, Danagama Mawanella Danagama', 1000.00, 'credit_card', '2121 2121 1212 1212', '123', '08', '2023', NULL, '2024-12-15 15:46:38');
+(18, 3, 'rahmath', 'ramath@gmail.com', '0769183535', '34/A, Danagama Mawanella Danagama', 1000.00, 'credit_card', '2121 2121 1212 1212', '123', '08', '2023', NULL, '2024-12-15 15:46:38'),
+(19, 2, 'aathif', 'Mhdaathi124@gmail.com', '0769183535', '34/A, Danagama Mawanella Danagama', 5000.00, 'credit_card', NULL, NULL, NULL, NULL, NULL, '2024-12-16 15:07:33'),
+(20, 9, 'atheek', 'atheek@gmail.com', '0769183535', '34/A, Danagama Mawanella Danagama', 20000.00, 'credit_card', NULL, NULL, NULL, NULL, NULL, '2024-12-16 15:21:32');
 
 -- --------------------------------------------------------
 
@@ -118,7 +124,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role_as`, `created_at`) VALUES
 (1, 'Mhd Aathif', 'Mhdaathi124@gmail.com', '111', 1, '2024-12-06 15:42:55'),
 (2, 'Mhd Arshak', 'MohamedArshak48@gmail.com', '111', 0, '2024-12-10 18:19:40'),
-(3, 'Atheek', 'atheek@gmail.com', '111', 0, '2024-12-16 00:41:10');
+(3, 'Atheek', 'atheek@gmail.com', '111', 0, '2024-12-16 00:41:10'),
+(4, 'Fathima', 'fathi@gmail.com', '111', 0, '2024-12-16 14:47:06');
 
 --
 -- Indexes for dumped tables
@@ -153,19 +160,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `campaigns`
 --
 ALTER TABLE `campaigns`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `donations`
 --
 ALTER TABLE `donations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

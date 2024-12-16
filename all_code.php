@@ -3,6 +3,12 @@ ob_start();
 session_start();
 include('admin/config/dbcon.php'); // Ensure this path is correct
 
+// Load Composer's autoload file for PHPMailer
+require __DIR__ . '\vendor\autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 // Logout Functionality
 if (isset($_POST['logout_btn'])) {
     // Clear session data
@@ -21,7 +27,7 @@ if (isset($_POST['btn-submit'])) {
     }
 
     // Sanitize and validate inputs
-    $campaign_id = intval($_POST['campaign_id']); // Treat as integer
+    $campaign_id = intval($_POST['campaign_id']);
     $donor_name = mysqli_real_escape_string($con, $_POST['name_on_card']);
     $email = mysqli_real_escape_string($con, $_POST['email']);
     $phone = mysqli_real_escape_string($con, $_POST['phone']);
@@ -29,17 +35,8 @@ if (isset($_POST['btn-submit'])) {
     $amount = floatval($_POST['amount']);
     $payment_type = mysqli_real_escape_string($con, $_POST['payment_type']);
 
-    // Additional fields for credit card payment
-    $card_number = ($payment_type === 'credit_card') ? mysqli_real_escape_string($con, $_POST['card_number']) : null;
-    $card_security_code = ($payment_type === 'credit_card') ? mysqli_real_escape_string($con, $_POST['security_code']) : null;
-    $card_expiration_month = ($payment_type === 'credit_card') ? mysqli_real_escape_string($con, $_POST['expiration_month']) : null;
-    $card_expiration_year = ($payment_type === 'credit_card') ? mysqli_real_escape_string($con, $_POST['expiration_year']) : null;
-
-    // Additional field for PayPal payment
-    $paypal_email = ($payment_type === 'paypal') ? mysqli_real_escape_string($con, $_POST['paypal_email']) : null;
-
     // Check if campaign exists and is active
-    $stmt = $con->prepare("SELECT id FROM campaigns WHERE id = ? AND status = 'Accepted'");
+    $stmt = $con->prepare("SELECT id, title FROM campaigns WHERE id = ? AND status = 'Accepted'");
     $stmt->bind_param("i", $campaign_id);
     $stmt->execute();
     $campaign_result = $stmt->get_result();
@@ -50,6 +47,8 @@ if (isset($_POST['btn-submit'])) {
         header("Location: donate.php?id=" . $campaign_id);
         exit();
     }
+    $campaign = $campaign_result->fetch_assoc();
+    $campaign_title = $campaign['title'];
 
     // Start database transaction
     mysqli_begin_transaction($con);
@@ -58,24 +57,19 @@ if (isset($_POST['btn-submit'])) {
         // Insert donation into 'donations' table
         $insert_donation_query = "
             INSERT INTO donations 
-            (campaign_id, donor_name, email, phone, address, amount, payment_type, card_number, card_security_code, card_expiration_month, card_expiration_year, paypal_email, donation_date) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            (campaign_id, donor_name, email, phone, address, amount, payment_type, donation_date) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
         ";
         $stmt = $con->prepare($insert_donation_query);
         $stmt->bind_param(
-            "issssdssssss",
+            "issssds",
             $campaign_id,
             $donor_name,
             $email,
             $phone,
             $address,
             $amount,
-            $payment_type,
-            $card_number,
-            $card_security_code,
-            $card_expiration_month,
-            $card_expiration_year,
-            $paypal_email
+            $payment_type
         );
 
         if (!$stmt->execute()) {
@@ -96,6 +90,75 @@ if (isset($_POST['btn-submit'])) {
         // Commit the transaction
         mysqli_commit($con);
 
+        // Send email to donor
+        $mail = new PHPMailer(true);
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->SMTPAuth   = true;
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->Username   = 'aathief01@gmail.com'; // Replace with your email
+            $mail->Password   = 'fhkbwdzlzqipbhea'; // Replace with your app password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
+
+            // Recipients
+            $mail->setFrom('aathief01@gmail.com', 'Campaign Platform');
+            $mail->addAddress($email, $donor_name);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = 'Thank You for Your Donation!';
+            $mail->Body    = "
+            <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <title>Donation Confirmation</title>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f4f4f4; }
+                    .email-container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; }
+                    .header { background-color: #1d3557; color: #ffffff; text-align: center; padding: 20px; }
+                    .content { padding: 20px; color: #333333; }
+                    .footer { background-color: #f1f1f1; text-align: center; padding: 10px; color: #777777; font-size: 12px; }
+                    .button { display: inline-block; background-color: #1d3557; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <!-- Header -->
+                    <div class='header'>
+                        <h2>Thank You, $donor_name!</h2>
+                    </div>
+
+                    <!-- Content -->
+                    <div class='content'>
+                        <p>We sincerely appreciate your generous donation to the campaign:</p>
+                        <h3 style='color: #1d3557;'>\"$campaign_title\"</h3>
+                        <p><strong>Donation Amount:</strong> LKR " . number_format($amount, 2) . "</p>
+                        <p>Your support plays a vital role in helping us achieve our goals and create a positive impact.</p>
+                        <p>Thank you for making a difference!</p>
+                        <p style='text-align: center; margin-top: 30px;'>
+                            <a href='https://your-platform-link.com/campaigns' class='button'>View More Campaigns</a>
+                        </p>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class='footer'>
+                        <p>© 2024 Campaign Platform. All rights reserved.</p>
+                        <p>Contact us: support@campaignplatform.com</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            ";
+
+            $mail->send();
+        } catch (Exception $e) {
+            $_SESSION['message'] .= " Email failed to send: {$mail->ErrorInfo}";
+        }
+
         // Success message
         $_SESSION['message'] = "Thank you for your donation!";
         header("Location: donate.php?id=" . $campaign_id);
@@ -103,8 +166,6 @@ if (isset($_POST['btn-submit'])) {
     } catch (Exception $e) {
         // Rollback on error
         mysqli_rollback($con);
-
-        // Log error for debugging
         error_log($e->getMessage());
 
         // Show error to the user
@@ -143,64 +204,60 @@ if (isset($_POST['create_campaign_btn'])) {
     }
 
     // File upload directory
-    $target_dir = "uploads/";
+    $target_dir = __DIR__ . '../uploads/'; // Save files outside admin folder
     if (!is_dir($target_dir)) {
         mkdir($target_dir, 0777, true); // Create directory if it doesn't exist
     }
 
-    // File validations
+    // Allowed file types
     $allowed_image_types = ['image/jpeg', 'image/png', 'image/jpg'];
-    $allowed_document_types = ['application/pdf', 'application/msword'];
-    $max_file_size = 2 * 1024 * 1024; // 2 MB
+    $allowed_document_types = array_merge($allowed_image_types, ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
+    $max_file_size = 10 * 1024 * 1024; // 10 MB
 
-    // Handle image upload
+    // Handle campaign image upload
     $campaign_image = $_FILES['campaign_image'];
     $image_name = time() . '_' . preg_replace("/[^a-zA-Z0-9.]/", "", basename($campaign_image['name']));
     $target_file = $target_dir . $image_name;
+    $image_path = '../uploads/' . $image_name; // Relative path for display
 
     if (!in_array($campaign_image['type'], $allowed_image_types) || $campaign_image['size'] > $max_file_size) {
-        $_SESSION['message'] = "Invalid image type or size. Only JPG, PNG under 2MB allowed.";
+        $_SESSION['message'] = "Invalid image type or size. Only JPG, PNG under 10MB allowed.";
         header("Location: create_campaign.php");
         exit();
     }
     if (!move_uploaded_file($campaign_image['tmp_name'], $target_file)) {
-        $_SESSION['message'] = "Error uploading image.";
+        $_SESSION['message'] = "Error uploading campaign image.";
         header("Location: create_campaign.php");
         exit();
     }
 
-    // Handle document upload
+    // Handle campaign document upload
     $campaign_document = $_FILES['campaign_document'];
     $document_name = time() . '_doc_' . preg_replace("/[^a-zA-Z0-9.]/", "", basename($campaign_document['name']));
     $document_target_file = $target_dir . $document_name;
+    $document_path = '../uploads/' . $document_name; // Relative path for display
 
     if (!in_array($campaign_document['type'], $allowed_document_types) || $campaign_document['size'] > $max_file_size) {
-        $_SESSION['message'] = "Invalid document type or size. Only PDF, DOC under 2MB allowed.";
+        $_SESSION['message'] = "Invalid document type or size. Only JPG, PNG, PDF, DOC, DOCX under 10MB allowed.";
         header("Location: create_campaign.php");
         exit();
     }
     if (!move_uploaded_file($campaign_document['tmp_name'], $document_target_file)) {
-        $_SESSION['message'] = "Error uploading supporting document.";
+        $_SESSION['message'] = "Error uploading campaign document.";
         header("Location: create_campaign.php");
         exit();
     }
 
-    // Prepare SQL statement
-    $organizer_name = $first_name . ' ' . $last_name;
-    $status = 'Pending'; // Default status
+    // Save to database
     $stmt = $con->prepare("
-        INSERT INTO campaigns 
-        (user_id, title, location, description, goal, category, start_date, end_date, image, document, organizer_name, contact, email, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ");
+    INSERT INTO campaigns 
+    (user_id, title, location, description, goal, category, start_date, end_date, image, document, organizer_name, contact, email, status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+");
 
-    if (!$stmt) {
-        $_SESSION['message'] = "Database error: " . $con->error;
-        header("Location: create_campaign.php");
-        exit();
-    }
+    $status = 'Pending';
+    $organizer_name = $first_name . ' ' . $last_name;
 
-    // Bind parameters and execute
     $stmt->bind_param(
         "isssssssssssss",
         $user_id,
@@ -211,8 +268,8 @@ if (isset($_POST['create_campaign_btn'])) {
         $campaign_category,
         $start_date,
         $end_date,
-        $target_file,
-        $document_target_file,
+        $image_path,      // Relative path
+        $document_path,   // Relative path
         $organizer_name,
         $organizer_contact,
         $organizer_email_address,

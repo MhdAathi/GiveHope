@@ -155,7 +155,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Donate</a>
+                    <a class="nav-link" href="all_campaigns.php">Donate</a>
                 </li>
 
                 <li class="nav-item">
@@ -174,7 +174,7 @@
                                 </form>
                             </li>
                             <li>
-                                <a href="admin/index.php" class="dropdown-item">Dashboard</a>
+                                <a href="user_authentic.php" class="dropdown-item">Dashboard</a>
                             </li>
                         </ul>
                     </li>

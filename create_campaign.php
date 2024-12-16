@@ -200,7 +200,6 @@ if (!isset($_SESSION['auth_user']['user_id'])) {
                     </div>
                 </div>
 
-
                 <div class="form-group">
                     <div class="side-by-side">
                         <div class="input-item">
@@ -219,7 +218,7 @@ if (!isset($_SESSION['auth_user']['user_id'])) {
                     <div class="input-item">
                         <label for="campaign_document">Upload Supporting Document (evidence) <span style="color: red;">*</span></label>
                         <input type="file" id="campaign_document" name="campaign_document" required accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
-                        <span class="note">Accepted formats: PDF, DOC, DOCX, JPG, PNG</span>
+                        <span class="note">Accepted formats: JPG, PNG</span>
                     </div>
                 </div>
 
@@ -227,6 +226,7 @@ if (!isset($_SESSION['auth_user']['user_id'])) {
                     <div class="input-item">
                         <label for="campaign_image">Upload Campaign Image <span style="color: red;">*</span></label>
                         <input type="file" id="campaign_image" name="campaign_image" required accept="image/*">
+                        <span class="note">Accepted formats: JPG, PNG</span>
                     </div>
                 </div>
 

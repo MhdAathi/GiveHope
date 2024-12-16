@@ -8,6 +8,38 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
 ?>
 
 <style>
+    #campaignDetailsTable th:nth-child(2),
+    /* Target the Description column header */
+    #campaignDetailsTable td:nth-child(2) {
+        /* Target the Description column data */
+        width: 200px;
+        /* Set a fixed width */
+        max-width: 200px;
+        /* Ensure it doesn't exceed this width */
+        white-space: normal;
+        /* Allow text wrapping */
+        word-wrap: break-word;
+        /* Break long words to fit within the width */
+        overflow: hidden;
+        /* Prevent content overflow */
+    }
+
+    #campaignDetailsTable th:nth-child(3),
+    /* Target the Description column header */
+    #campaignDetailsTable td:nth-child(3) {
+        /* Target the Description column data */
+        width: 200px;
+        /* Set a fixed width */
+        max-width: 200px;
+        /* Ensure it doesn't exceed this width */
+        white-space: normal;
+        /* Allow text wrapping */
+        word-wrap: break-word;
+        /* Break long words to fit within the width */
+        overflow: hidden;
+        /* Prevent content overflow */
+    }
+
     #campaignDetailsTable th:nth-child(4),
     /* Target the Description column header */
     #campaignDetailsTable td:nth-child(4) {
@@ -101,14 +133,13 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                                             <!-- New Document Column -->
                                             <td>
                                                 <?php if (!empty($row['document'])): ?>
-                                                    <a href="<?= htmlspecialchars($row['document']); ?>" download title="Download Document">
-                                                        <i class="fas fa-file-download text-primary" style="font-size: 1.5rem;"></i>
+                                                    <a href="<?= htmlspecialchars($row['document']); ?>" target="_blank" title="View Full Image">
+                                                        <img src="<?= htmlspecialchars($row['document']); ?>" alt="Document" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="text-muted">No Document</span>
                                                 <?php endif; ?>
                                             </td>
-
 
                                             <td><?= htmlspecialchars($row['start_date']); ?></td>
                                             <td><?= htmlspecialchars($row['end_date']); ?></td>
@@ -143,7 +174,7 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                                                         <a href="edit_campaign.php?id=<?= htmlspecialchars($row['id']); ?>" class="btn btn-warning btn-sm" title="Edit">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <button type="button" class="btn btn-danger btn-sm" title="Delete">
+                                                        <button type="button" class="btn btn-danger btn-sm" title="Delete" onclick="confirmDelete(<?= $row['id']; ?>)">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     <?php endif; ?>
@@ -173,12 +204,13 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
 
 <script>
     function confirmDelete(campaignId) {
-        const confirmed = confirm("Are you sure you want to delete this campaign? This action cannot be undone.");
-        if (confirmed) {
-            // Redirect to delete handler with campaign ID
-            window.location.href = `delete_campaign.php?id=${campaignId}`;
+        const isConfirmed = confirm("Are you sure you want to delete this campaign? This action cannot be undone.");
+        if (isConfirmed) {
+            // Redirect to the delete handler with campaign ID
+            window.location.href = `admin_all_code.php?id=${campaignId}`;
         }
     }
+
 
     // JavaScript function for automatic search filter
     function filterTable() {

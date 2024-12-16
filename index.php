@@ -7,6 +7,13 @@ include('includes/navbar.php');
 
 <style>
     /* Enable smooth scrolling across the page */
+    .navbar {
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1000;
+    }
+
     html {
         scroll-behavior: smooth;
     }
@@ -232,6 +239,26 @@ include('includes/navbar.php');
         color: white;
     }
 
+    .btn-see-more {
+        padding: 15px 20px;
+        font-size: 14px;
+        font-weight: 400%;
+        border-radius: 25px;
+        text-align: center;
+        flex: 1;
+        text-decoration: none;
+    }
+
+    .btn-see-more {
+        background: #1d3557;
+        color: white;
+    }
+
+    .btn-see-more:hover {
+        opacity: 0.9;
+        transform: scale(1.1);
+    }
+
     .btn-view {
         background: #1d3557;
         color: white;
@@ -339,7 +366,7 @@ include('includes/navbar.php');
         height: 500px;
     }
 
-    /* Smooth Transition Animations */
+    /* Slide In Right Animation */
     @keyframes slideInRight {
         from {
             transform: translateX(100%);
@@ -352,6 +379,7 @@ include('includes/navbar.php');
         }
     }
 
+    /* Slide In Left Animation */
     @keyframes slideInLeft {
         from {
             transform: translateX(-100%);
@@ -362,6 +390,16 @@ include('includes/navbar.php');
             transform: translateX(0);
             opacity: 1;
         }
+    }
+
+    /* Apply Animation to Cards */
+    /* Classes Added Dynamically in JS */
+    .slide-in-right {
+        animation-name: slideInRight;
+    }
+
+    .slide-in-left {
+        animation-name: slideInLeft;
     }
 
     /* Testimonials Section */
@@ -519,7 +557,7 @@ include('includes/navbar.php');
     }
 </style>
 
-<div class="mt-5">
+<div class="mt-3 mb-3" style="justify-content: center; margin: 20px auto;">
     <?php include('message.php'); ?>
 </div>
 
@@ -558,7 +596,7 @@ include('includes/navbar.php');
                         </div>
 
                         <div class="campaign-body">
-                            <h3 class="campaign-title"><?= htmlspecialchars($campaign['title']); ?></h3>
+                            <h3 class="campaign-title"><?= htmlspecialchars(substr($campaign['title'], 0, 30)); ?></h3>
                             <div class="campaign-meta">
                                 <span class="campaign-location"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($campaign['location']); ?></span>
                                 <span class="campaign-category"><?= htmlspecialchars($campaign['category']); ?></span>
@@ -587,6 +625,10 @@ include('includes/navbar.php');
             ?>
         </div>
         <button class="arrow-right" onclick="nextCards()">→</button>
+
+    </div>
+    <div style="text-align: center; margin-top: 25px;">
+        <a href="all_campaigns.php" class="btn-see-more">See More Campaigns</a>
     </div>
 </section>
 
@@ -722,16 +764,15 @@ include('includes/navbar.php');
     const campaignWrapper = document.querySelector(".campaign-wrapper");
     const campaignCards = Array.from(document.querySelectorAll(".campaign-card")); // Convert NodeList to Array
 
-    function updateCardDisplay(direction = null) {
+    function updateCardDisplay(direction = "") {
         const totalCards = campaignCards.length;
-        const visibleCards = campaignCards.slice(currentIndex, currentIndex + cardsToShow);
 
-        // Add animation classes based on the direction
+        // Add animation classes based on direction
         campaignCards.forEach((card, index) => {
+            card.classList.remove("slide-in-left", "slide-in-right"); // Reset animation
             card.style.display = "none"; // Hide all cards initially
-            card.classList.remove("slide-in-left", "slide-in-right"); // Reset animation classes
-            if (visibleCards.includes(card)) {
-                card.style.display = "block"; // Show visible cards
+            if (index >= currentIndex && index < currentIndex + cardsToShow) {
+                card.style.display = "block"; // Show current cards
                 if (direction === "next") card.classList.add("slide-in-right");
                 if (direction === "prev") card.classList.add("slide-in-left");
             }
@@ -739,21 +780,20 @@ include('includes/navbar.php');
 
         // Enable/Disable navigation arrows
         document.querySelector(".arrow-left").disabled = currentIndex === 0;
-        document.querySelector(".arrow-right").disabled =
-            currentIndex + cardsToShow >= totalCards;
+        document.querySelector(".arrow-right").disabled = currentIndex + cardsToShow >= totalCards;
     }
 
     function nextCards() {
         const totalCards = campaignCards.length;
         if (currentIndex + cardsToShow < totalCards) {
-            currentIndex++;
+            currentIndex += cardsToShow;
             updateCardDisplay("next");
         }
     }
 
     function prevCards() {
         if (currentIndex > 0) {
-            currentIndex--;
+            currentIndex -= cardsToShow;
             updateCardDisplay("prev");
         }
     }
