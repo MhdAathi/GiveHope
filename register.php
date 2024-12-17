@@ -127,44 +127,141 @@ include('includes/header.php');
         font-weight: 300;
         font-size: 13px;
     }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #666;
+    }
+
+    .password-toggle:hover {
+        color: #000;
+    }
+
+    .password-requirements {
+        background-color: #f9f9f9;
+        border-left: 3px solid #1d3557;
+        padding: 10px;
+        margin-top: 10px;
+        font-size: 13px;
+        color: #555;
+    }
+
+    .password-requirements ul {
+        margin: 0;
+        padding-left: 20px;
+    }
 </style>
 
-<div class="signup-container">
-    <div class="signup-card">
-        <div class="card-header text-center">
-            <h4>Register to <a class="navbar-brand" href="#"><span class="span-color">Give</span>Hope</a></h4>
-        </div>
-        <div class="card-body">
-            <?php include('message.php'); ?>
+<div class="signup-card">
+    <div class="card-header">
+        <h4>Register to <span style="color: #1d3557;">GiveHope</span></h4>
+    </div>
+    <div class="card-body">
+        <?php include('message.php'); ?>
 
-            <form action="register_code.php" method="POST">
-                <!-- Username -->
-                <div class="form-group mb-3">
-                    <label>Username</label>
-                    <input required type="text" name="username" placeholder="Enter your username" class="form-control">
+        <form action="register_code.php" method="POST" onsubmit="return validatePassword()">
+            <!-- Username -->
+            <div class="form-group mt-3">
+                <label>Username</label>
+                <input required type="text" name="username" placeholder="Enter your username" class="form-control">
+            </div>
+
+            <!-- Email -->
+            <div class="form-group mt-3">
+                <label>Email Address</label>
+                <input required type="email" name="email" placeholder="Enter your email" class="form-control">
+            </div>
+
+            <!-- Password -->
+            <div class="form-group mt-3">
+                <label>Password</label>
+                <div style="position: relative;">
+                    <input type="password" id="password" name="password" required placeholder="Enter Password" class="form-control">
+                    <span id="toggle-password" class="password-toggle"><i class="fas fa-eye"></i></span>
                 </div>
+            </div>
 
-                <!-- Email -->
-                <div class="form-group mb-3">
-                    <label>Email Address</label>
-                    <input required type="email" name="email" placeholder="Enter your email" class="form-control">
+            <!-- Confirm Password -->
+            <div class="form-group mt-3">
+                <label>Confirm Password</label>
+                <div style="position: relative;">
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm Your Password" class="form-control">
+                    <span id="toggle-confirm-password" class="password-toggle"><i class="fas fa-eye"></i></span>
                 </div>
+            </div>
 
-                <!-- Password -->
-                <div class="form-group mb-3">
-                    <label>Password</label>
-                    <input required type="password" name="password" placeholder="Enter your password" class="form-control">
-                </div>
+            <!-- Password Requirements -->
+            <div class="password-requirements">
+                <ul>
+                    <li>At least 8 characters</li>
+                    <li>At least one uppercase letter</li>
+                    <li>At least one number</li>
+                    <li>At least one special character (!, @, #, $, etc.)</li>
+                </ul>
+            </div>
 
-                <!-- Confirm Password -->
-                <div class="form-group mb-3">
-                    <label>Confirm Password</label>
-                    <input required type="password" name="confirm_password" placeholder="Confirm your password" class="form-control">
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" name="register_btn" class="btn btn-primary btn-block">Register Now</button>
-            </form>
-        </div>
+            <!-- Submit Button -->
+            <button type="submit" name="register_btn" class="btn btn-primary btn-block mt-3">Register Now</button>
+        </form>
     </div>
 </div>
+
+<script>
+    // Toggle Password Visibility
+    document.addEventListener("DOMContentLoaded", function() {
+        const togglePassword = document.getElementById("toggle-password");
+        const toggleConfirmPassword = document.getElementById("toggle-confirm-password");
+
+        const passwordField = document.getElementById("password");
+        const confirmPasswordField = document.getElementById("confirm_password");
+
+        // For Password Field
+        togglePassword.addEventListener("click", function() {
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passwordField.type = "password";
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+
+        // For Confirm Password Field
+        toggleConfirmPassword.addEventListener("click", function() {
+            if (confirmPasswordField.type === "password") {
+                confirmPasswordField.type = "text";
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                confirmPasswordField.type = "password";
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+    });
+
+    // Password Validation
+    function validatePassword() {
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirm_password").value;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
+
+        console.log("Password:", password);
+        console.log("Regex Match:", regex.test(password));
+
+        if (!regex.test(password)) {
+            alert("Password must be at least 8 characters long, include one uppercase letter, one number, and one special character (!, @, #, $, etc.).");
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            alert("Passwords do not match.");
+            return false;
+        }
+
+        return true;
+    }
+</script>

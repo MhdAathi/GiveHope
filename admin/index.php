@@ -121,7 +121,11 @@ if ($donor_query_run) {
 </style>
 
 <div class="container-fluid px-4">
+
     <h1 class="mt-4">Dashboard</h1>
+
+    <?php include('../message.php'); ?>
+    
     <div class="dashboard-cards">
         <!-- Total Donors -->
         <div class="card">

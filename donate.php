@@ -356,7 +356,7 @@ if ($campaign_id) {
                 <div class="side-by-side">
                     <div class="form-group">
                         <label for="security_code">Security Code (CVV) <span style="color: red;">*</span></label>
-                        <input type="text" id="security_code" name="security_code" placeholder="Enter CVV" required>
+                        <input type="text" id="security_code" name="security_code" placeholder="123" required>
                     </div>
                     <div class="form-group">
                         <label for="expiration_month">Expiration Month <span style="color: red;">*</span></label>
@@ -385,6 +385,9 @@ if ($campaign_id) {
                             <option value="2025">2025</option>
                             <option value="2026">2026</option>
                             <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                            <option value="2029">2029</option>
+                            <option value="2030">2030</option>
                         </select>
                     </div>
                 </div>
@@ -398,6 +401,10 @@ if ($campaign_id) {
 
             <!-- PayPal Details -->
             <div id="paypal_details" style="display: none;">
+                <div class="form-group">
+                    <label for="name">Name <span style="color: red;">*</span></label>
+                    <input type="text" id="name" name="name" placeholder="Enter your Name">
+                </div>
                 <div class="form-group">
                     <label for="paypal_email">PayPal Email <span style="color: red;">*</span></label>
                     <input type="email" id="paypal_email" name="paypal_email" placeholder="Enter your PayPal email">
@@ -424,67 +431,137 @@ if ($campaign_id) {
     </div>
 
     <script>
+        // Format the card number (e.g., 1234 5678 9012 3456)
         document.getElementById("card_number").addEventListener("input", function(event) {
-            let cardNumber = event.target.value.replace(/\D/g, ''); // Remove non-digit characters
-            cardNumber = cardNumber.replace(/(\d{4})(?=\d)/g, '$1 '); // Add space every 4 digits
-            event.target.value = cardNumber;
+            let cardNumber = event.target.value.replace(/\D/g, ''); // Remove all non-digits
+            event.target.value = cardNumber.replace(/(\d{4})(?=\d)/g, '$1 '); // Add space every 4 digits
         });
 
-        // Function to show/hide payment method details based on selected payment type
-        function togglePaymentDetails() {
-            var paymentType = document.querySelector('input[name="payment_type"]:checked').value;
+        // CVV Validation: Restrict to 3-4 digits only
+        document.getElementById("security_code").addEventListener("input", function(event) {
+            let cvv = event.target.value.replace(/\D/g, ''); // Remove non-digits
+            event.target.value = cvv.slice(0, 4); // Limit to 4 digits
+        });
 
-            // Show Credit Card details if 'credit_card' is selected, hide PayPal
+        // Function to toggle payment method details and disable unused fields
+        function togglePaymentDetails() {
+            const paymentType = document.querySelector('input[name="payment_type"]:checked').value;
+
             if (paymentType === 'credit_card') {
                 document.getElementById('credit_card_details').style.display = 'block';
                 document.getElementById('paypal_details').style.display = 'none';
 
+                // Enable Credit Card fields
                 document.getElementById('card_number').disabled = false;
                 document.getElementById('expiration_month').disabled = false;
                 document.getElementById('expiration_year').disabled = false;
                 document.getElementById('security_code').disabled = false;
+                document.getElementById('name_on_card').disabled = false;
 
+                // Disable PayPal fields
                 document.getElementById('paypal_email').disabled = true;
-            }
-            // Show PayPal details if 'paypal' is selected, hide Credit Card
-            else if (paymentType === 'paypal') {
+            } else if (paymentType === 'paypal') {
                 document.getElementById('credit_card_details').style.display = 'none';
                 document.getElementById('paypal_details').style.display = 'block';
 
+                // Enable PayPal fields
                 document.getElementById('paypal_email').disabled = false;
 
+                // Disable Credit Card fields
                 document.getElementById('card_number').disabled = true;
                 document.getElementById('expiration_month').disabled = true;
                 document.getElementById('expiration_year').disabled = true;
                 document.getElementById('security_code').disabled = true;
+                document.getElementById('name_on_card').disabled = true;
             }
         }
 
-        // Run toggle function on page load and on radio button change
+        // Validate Credit Card Details
+        function validateCardDetails() {
+            const cardNumber = document.getElementById("card_number").value.replace(/\s/g, '');
+            const securityCode = document.getElementById("security_code").value;
+            const expirationMonth = document.getElementById("expiration_month").value;
+            const expirationYear = document.getElementById("expiration_year").value;
+            const nameOnCard = document.getElementById("name_on_card").value.trim();
+
+            const cardNumberRegex = /^\d{16}$/; // 16-digit card number
+            const cvvRegex = /^\d{3,4}$/; // 3 or 4 digits for CVV
+
+            if (!cardNumberRegex.test(cardNumber)) {
+                alert("Invalid Card Number. Please enter a 16-digit card number.");
+                return false;
+            }
+
+            if (!cvvRegex.test(securityCode)) {
+                alert("Invalid CVV. Please enter a 3 or 4 digit security code.");
+                return false;
+            }
+
+            if (!expirationMonth || !expirationYear) {
+                alert("Please select a valid expiration date.");
+                return false;
+            }
+
+            if (nameOnCard === "") {
+                alert("Please enter the name on the card.");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Validate PayPal Details
+        function validatePayPalDetails() {
+            const paypalEmail = document.getElementById("paypal_email").value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation
+
+            if (!emailRegex.test(paypalEmail)) {
+                alert("Invalid PayPal email. Please enter a valid email address.");
+                return false;
+            }
+            return true;
+        }
+
+        // Validate the selected payment method before submission
+        document.querySelector("form").addEventListener("submit", function(event) {
+            const paymentType = document.querySelector('input[name="payment_type"]:checked').value;
+
+            let isValid = false;
+
+            if (paymentType === "credit_card") {
+                isValid = validateCardDetails(); // Validate credit card details
+            } else if (paymentType === "paypal") {
+                isValid = validatePayPalDetails(); // Validate PayPal email
+            }
+
+            if (!isValid) {
+                event.preventDefault(); // Stop submission if validation fails
+            }
+        });
+
+        // Attach event listeners for toggling payment method details
         window.onload = togglePaymentDetails;
         document.querySelectorAll('input[name="payment_type"]').forEach((elem) => {
             elem.addEventListener('change', togglePaymentDetails);
         });
 
-        // Function to update the amount based on predefined radio selection
+        // Amount update functions
         function updateAmount(amount) {
             document.getElementById('amount_display').value = amount;
-            document.getElementById('custom_amount_group').style.display = 'none'; // Hide custom input if predefined amount selected
+            document.getElementById('custom_amount_group').style.display = 'none';
         }
 
-        // Function to enable custom amount input field
         function enableCustomAmount() {
-            document.getElementById('amount_display').value = ''; // Clear any predefined value
-            document.getElementById('custom_amount_group').style.display = 'block'; // Show custom input field
+            document.getElementById('amount_display').value = '';
+            document.getElementById('custom_amount_group').style.display = 'block';
         }
 
-        // Update amount from custom input field
         function updateAmountFromInput() {
-            var customAmount = document.getElementById('custom_amount').value;
+            const customAmount = document.getElementById('custom_amount').value;
             document.getElementById('amount_display').value = customAmount;
         }
     </script>
 
-</div>
 
+</div>
 <?php include('includes/footer.php');

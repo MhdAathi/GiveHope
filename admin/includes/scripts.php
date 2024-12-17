@@ -25,11 +25,11 @@
 <!-- //Summer note JS - CDN Link -->
 
 <script>
-    document.getElementById('sidebarToggle').addEventListener('click', function() {
-        const sidebar = document.getElementById('layoutSidenav_nav');
-
-        // Toggle class to show/hide the sidebar
-        sidebar.classList.toggle('hidden'); // Toggle a CSS class for hiding
+    document.getElementById("sidebarToggle").addEventListener("click", function() {
+        const sidebar = document.getElementById("layoutSidenav_nav");
+        const content = document.getElementById("layoutSidenav_content");
+        sidebar.classList.toggle("toggled");
+        content.classList.toggle("toggled");
     });
 </script>
 </body>

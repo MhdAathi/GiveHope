@@ -1,5 +1,6 @@
 <?php
-include('admin/authentication.php');
+session_start();
+include('admin/config/dbcon.php');
 include('includes/header.php');
 include('includes/navbar.php');
 

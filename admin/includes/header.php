@@ -18,6 +18,11 @@
     <!-- Font Awesome for Icons -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
+    <!-- Bootstrap 5 JS & Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+
     <!-- Summernote CSS - CDN Link -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
@@ -115,38 +120,3 @@
         <?php include('includes/sidebar.php'); ?>
         <div id="layoutSidenav_content">
             <main>
-                <!-- Script to manage page loader visibility -->
-                <script>
-                    // Page loader logic
-                    window.addEventListener("load", function() {
-                        const pageLoader = document.getElementById("fullPageLoader");
-
-                        // Show loader when the page is loading
-                        pageLoader.classList.add("active");
-
-                        // Hide the loader after 1 second (you can adjust this value for a quicker or slower load)
-                        setTimeout(() => {
-                            pageLoader.classList.remove("active");
-                        }, 1500); // Adjust timeout as necessary
-                    });
-
-                    // Functions to handle loader during AJAX requests
-                    function showLoader() {
-                        const loader = document.getElementById("fullPageLoader");
-                        loader.classList.remove("hidden");
-                    }
-
-                    function hideLoader() {
-                        const loader = document.getElementById("fullPageLoader");
-                        loader.classList.add("hidden");
-                    }
-
-                    // Example AJAX request simulation
-                    function simulateAjaxRequest() {
-                        showLoader();
-                        setTimeout(() => {
-                            hideLoader();
-                            alert("AJAX content loaded!");
-                        }, 1500); // Simulate a 2-second delay for the AJAX request
-                    }
-                </script>

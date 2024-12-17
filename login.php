@@ -7,7 +7,6 @@ if (isset($_SESSION['auth'])) {
 };
 include('includes/header.php');
 include('includes/navbar.php');
-
 ?>
 
 <style>
@@ -15,7 +14,6 @@ include('includes/navbar.php');
 
     body {
         background-color: #ecebf3;
-        /* Updated background color */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -24,15 +22,8 @@ include('includes/navbar.php');
         font-family: 'Montserrat', sans-serif;
     }
 
-    .login-container::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        opacity: 0.9;
+    .login-container {
+        position: relative;
     }
 
     .login-card {
@@ -42,8 +33,7 @@ include('includes/navbar.php');
         border-radius: 10px;
         overflow: hidden;
         padding: 20px;
-        background:  #ffffff;
-        /* Updated form color */
+        background: #ffffff;
         -webkit-backdrop-filter: blur(15px);
         backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.225);
@@ -60,7 +50,6 @@ include('includes/navbar.php');
         margin-top: 20px;
         margin-bottom: 20px;
         color: #ffffff;
-        /* White text for better contrast */
     }
 
     .card-header h4 {
@@ -81,7 +70,6 @@ include('includes/navbar.php');
         font-weight: bold;
         font-size: 16px;
         color: #000;
-        /* White label text for better contrast */
     }
 
     .form-group input {
@@ -92,6 +80,15 @@ include('includes/navbar.php');
         margin-top: 5px;
         width: 100%;
         background-color: #f0f0f0;
+        color: #333;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 12px;
+        cursor: pointer;
+        font-size: 18px;
         color: #333;
     }
 
@@ -169,9 +166,7 @@ include('includes/navbar.php');
             <h4>Login to <a class="navbar-brand" href="#"><span class="span-color">Give</span>Hope</a></h4>
         </div>
         <div class="card-body">
-
             <?php include('message.php'); ?>
-
             <form action="login_code.php" method="POST">
                 <div class="form-group mb-3">
                     <label>Email ID</label>
@@ -180,7 +175,13 @@ include('includes/navbar.php');
 
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" name="password" required placeholder="Enter Password" class="form-control">
+                    <div style="position: relative;">
+                        <input type="password" id="password" name="password" required placeholder="Enter Password" class="form-control">
+                        <span id="toggle-password" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <small id="passwordHint" style="color: red;"></small>
                 </div>
 
                 <div class="form-group mb-3">
@@ -188,7 +189,7 @@ include('includes/navbar.php');
                 </div>
 
                 <div class="form-group mb-3">
-                    <button type="submit" name="login_btn" class="btn btn-primary btn-block">Login Now</button>
+                    <button type="submit" name="login_btn" onclick="return validatePassword();" class="btn btn-primary btn-block">Login Now</button>
                 </div>
 
                 <div class="form-group text-center">
@@ -198,3 +199,56 @@ include('includes/navbar.php');
         </div>
     </div>
 </div>
+
+<!-- Script -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+<script>
+    // Password Toggle Visibility
+    const togglePassword = document.getElementById('toggle-password');
+    const passwordInput = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+
+    // Password Validation Function with Dynamic Hints
+    function validatePassword() {
+        const password = document.getElementById("password").value;
+        const passwordHint = document.getElementById("passwordHint");
+
+        // Password complexity checks
+        const minLength = /.{8,}/;
+        const uppercase = /[A-Z]/;
+        const lowercase = /[a-z]/;
+        const number = /[0-9]/;
+        const specialChar = /[!@#$%^&*(),.?":{}|<>_\-]/;
+
+        if (!minLength.test(password)) {
+            passwordHint.innerText = "Password must be at least 8 characters long.";
+            return false;
+        }
+        if (!uppercase.test(password)) {
+            passwordHint.innerText = "Password must contain at least one uppercase letter.";
+            return false;
+        }
+        if (!lowercase.test(password)) {
+            passwordHint.innerText = "Password must contain at least one lowercase letter.";
+            return false;
+        }
+        if (!number.test(password)) {
+            passwordHint.innerText = "Password must contain at least one number.";
+            return false;
+        }
+        if (!specialChar.test(password)) {
+            passwordHint.innerText = "Password must contain at least one special character (!@#$%^&*(),.?\":{}|<>_-).";
+            return false;
+        }
+
+        // Clear hint if password is valid
+        passwordHint.innerText = "";
+        return true;
+    }
+</script>

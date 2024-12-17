@@ -12,7 +12,7 @@ use PHPMailer\PHPMailer\Exception;
 // Logout Functionality
 if (isset($_POST['logout_btn'])) {
     // Clear session data
-    unset($_SESSION['auth'], $_SESSION['auth_role'], $_SESSION['auth_user']);
+    unset($_SESSION['auth'], $_SESSION['auth_role'], $_SESSION['auth_user'], $_SESSION['user_id']);
 
     $_SESSION['message'] = "Logged Out Successfully";
     header("Location: login.php");
@@ -34,6 +34,13 @@ if (isset($_POST['btn-submit'])) {
     $address = mysqli_real_escape_string($con, $_POST['address_line']);
     $amount = floatval($_POST['amount']);
     $payment_type = mysqli_real_escape_string($con, $_POST['payment_type']);
+
+    // Determine donor_name based on payment type
+    if ($payment_type === 'paypal') {
+        $donor_name = mysqli_real_escape_string($con, $_POST['name']); // PayPal name field
+    } else {
+        $donor_name = mysqli_real_escape_string($con, $_POST['name_on_card']); // Credit Card name field
+    }
 
     // Check if campaign exists and is active
     $stmt = $con->prepare("SELECT id, title FROM campaigns WHERE id = ? AND status = 'Accepted'");
