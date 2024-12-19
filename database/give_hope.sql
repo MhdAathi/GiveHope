@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 17, 2024 at 07:01 PM
+-- Generation Time: Dec 19, 2024 at 04:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -63,7 +63,8 @@ INSERT INTO `campaigns` (`id`, `user_id`, `title`, `location`, `description`, `g
 (10, 2, 'Treatment Fund for Children', 'Colombo, Sri Lanka', 'Raising funds for medical treatment and care for children diagnosed with cancer at Apeksha Hospital in Maharagama.', 500000.00, '0', '2025-02-05', '2025-05-05', 'uploads/1734356728_image_children.jpeg', 'uploads/1734356728_support_document.jpeg', '', '', '', '2024-12-16 13:45:28', 'Rejected', 0.00),
 (11, 2, 'Rebuild Homes for Flood Victims in Gampaha', 'Gampaha District, Sri Lanka', 'We aim to provide shelter and essential resources for families affected by the recent floods in Gampaha. Your contribution will help rebuild homes, provide food supplies, and bring hope to those in need.', 500000.00, 'Disaster Relief', '2025-02-03', '2025-04-03', 'uploads/1734357934_flood.jpeg', '../uploads/1734357934_doc_document.jpeg', 'Nimal Perera', '077 123 4567', 'nimal.perera@example.com', '2024-12-16 14:05:34', 'Rejected', 0.00),
 (13, 3, 'Clean Drinking Water Project', 'Monaragala District, Sri Lanka', 'Many families in Monaragala suffer due to the lack of clean drinking water. This project aims to provide clean water facilities by installing water purification systems and safe water wells to improve health and hygiene in rural areas.', 100000.00, 'Environment', '2024-12-25', '2025-03-25', '../uploads/1734364609_cleanwater.jpg', '../uploads/1734364609_doc_document.jpeg', 'Ahmed Raazim', '0763939272', 'raazimramzan@gmail.com', '2024-12-16 15:56:49', 'Pending', 0.00),
-(14, 1, 'Empowering Rural Schools with Digital Learning', 'Badulla District', 'This campaign focuses on bridging the digital divide in rural schools by providing laptops, projectors, and internet connectivity. Empowering students with modern learning tools will improve their access to quality education and opportunities.', 750000.00, 'Education', '2025-01-20', '2025-02-20', '../uploads/1734365049_school.jpeg', '../uploads/1734365049_doc_document.jpeg', 'Itachi Uchiha', '0775846781', 'Rameed.gms007@gmail.com', '2024-12-16 16:04:09', 'Accepted', 0.00);
+(14, 1, 'Empowering Rural Schools with Digital Learning', 'Badulla District', 'This campaign focuses on bridging the digital divide in rural schools by providing laptops, projectors, and internet connectivity. Empowering students with modern learning tools will improve their access to quality education and opportunities.', 750000.00, 'Education', '2025-01-20', '2025-02-20', '../uploads/1734365049_school.jpeg', '../uploads/1734365049_doc_document.jpeg', 'Itachi Uchiha', '0775846781', 'Rameed.gms007@gmail.com', '2024-12-16 16:04:09', 'Accepted', 0.00),
+(15, 6, 'Help Build a School', 'Mawanella, Srilanka', 'Providing education resources for children.', 750000.00, 'Education', '2025-01-15', '2025-03-25', '../uploads/1734516061_school.jpeg', '../uploads/1734516061_doc_CampaignPlanningTemplates2023.pdf', 'Mohamed Afras', '0777123456', 'Mhdappu@gmail.com', '2024-12-18 10:01:02', 'Rejected', 0.00);
 
 -- --------------------------------------------------------
 
@@ -88,8 +89,8 @@ CREATE TABLE `donations` (
 --
 
 INSERT INTO `donations` (`id`, `campaign_id`, `donor_name`, `email`, `phone`, `address`, `amount`, `payment_type`, `donation_date`) VALUES
-(6, 1, 'aaar', 'Mhdaathi124@gmail.com', '0769183535', '34/A,danagama,mawanella', 0.00, 'credit_card', '2024-12-13 16:11:56'),
-(7, 1, 'aaar', 'Mhdaathi124@gmail.com', '0769183535', '34/A,danagama,mawanella', 0.00, 'credit_card', '2024-12-13 16:21:10'),
+(6, 1, 'aaar', 'Mhdaathi124@gmail.com', '0769183535', '34/A,danagama,mawanella', 1000.00, 'credit_card', '2024-12-13 16:11:56'),
+(7, 1, 'aaar', 'Mhdaathi124@gmail.com', '0769183535', '34/A,danagama,mawanella', 3500.00, 'credit_card', '2024-12-13 16:21:10'),
 (14, 2, 'aathif', 'aathi@gmail.com', '0769183535', '34/A,danagama,mawanella', 1000.00, 'credit_card', '2024-12-14 07:39:59'),
 (16, 3, 'aadhil', 'aadhilm@gmail.com', '0769183535', '34/A,danagama,mawanella', 5000.00, 'credit_card', '2024-12-14 07:44:55'),
 (17, 1, 'mohamed', 'MohamedArshak48@gmail.com', '0769183535', '34/A, Danagama Mawanella Danagama', 10000.00, 'credit_card', '2024-12-14 07:52:11'),
@@ -105,6 +106,27 @@ INSERT INTO `donations` (`id`, `campaign_id`, `donor_name`, `email`, `phone`, `a
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `feedback`
+--
+
+CREATE TABLE `feedback` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `feedback` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `feedback`
+--
+
+INSERT INTO `feedback` (`id`, `name`, `email`, `feedback`, `created_at`) VALUES
+(1, 'Mohammed Aathif', 'Mhdaathi124@gmail.com', 'User Friendly System!:)', '2024-12-19 15:10:53');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -113,7 +135,7 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role_as` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0=user, 1=admin, 2=superadmin',
+  `role_as` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0=user, 1=admin',
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -123,7 +145,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role_as`, `created_at`) VALUES
 (1, 'Mhd Aathif', 'Mhdaathi124@gmail.com', 'Aathif1.', 1, '2024-12-06 15:42:55'),
-(2, 'Mhd Arshak', 'MohamedArshak48@gmail.com', '111', 0, '2024-12-10 18:19:40'),
+(2, 'Mhd Arshak', 'MohamedArshak48@gmail.com', 'Arshak2003.', 0, '2024-12-10 18:19:40'),
 (3, 'Atheek', 'atheek@gmail.com', '111', 0, '2024-12-16 00:41:10'),
 (4, 'Fathima', 'fathi@gmail.com', '111', 0, '2024-12-16 14:47:06'),
 (5, 'Mohamed Ijlan', 'clownnobody9@gmail.com', 'Ijlan2002@', 0, '2024-12-17 22:09:21'),
@@ -148,6 +170,12 @@ ALTER TABLE `donations`
   ADD KEY `campaign_id` (`campaign_id`);
 
 --
+-- Indexes for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -162,13 +190,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `campaigns`
 --
 ALTER TABLE `campaigns`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `donations`
 --
 ALTER TABLE `donations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `feedback`
+--
+ALTER TABLE `feedback`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`

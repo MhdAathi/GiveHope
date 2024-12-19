@@ -4,26 +4,26 @@ include('includes/header.php');
 
 // Check if the logged-in user is an admin
 if ($_SESSION['auth_user']['user_id'] == 1) {
-    // Admin: Fetch all campaigns
+    // Admin: Fetch all accepted campaigns
     $query = "
         SELECT id AS campaign_id, title AS campaign_name, goal, raised, 
                end_date AS deadline, user_id 
-        FROM campaigns";
+        FROM campaigns 
+        WHERE status = 'Accepted'";
     $query_run = mysqli_query($con, $query);
 } else {
-    // Campaign creator: Fetch only their campaigns
+    // Campaign creator: Fetch only their accepted campaigns
     $user_id = $_SESSION['auth_user']['user_id']; // Get the logged-in user's ID
     $query = "
         SELECT id AS campaign_id, title AS campaign_name, goal, raised, 
                end_date AS deadline 
         FROM campaigns 
-        WHERE user_id = ?";
+        WHERE user_id = ? AND status = 'Accepted'";
     $stmt = $con->prepare($query);
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $query_run = $stmt->get_result();
 }
-
 ?>
 
 <div class="container-fluid px-4">

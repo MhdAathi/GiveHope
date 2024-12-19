@@ -223,6 +223,92 @@ include('includes/navbar.php');
         transition: all 0.3s ease;
     }
 
+    /* Feedback Section */
+    .feedback {
+        background: linear-gradient(to right, #1d3557, #457b9d);
+        padding: 30px 0;
+        text-align: center;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .feedback img {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feedback img:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .feedback h2 {
+        color: white;
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .feedback p {
+        color: #0C120C;
+        font-size: 20px;
+        margin-bottom: 40px;
+    }
+
+    .feedback form {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feedback form:hover {
+        transform: translateY(-8px);
+    }
+
+    .feedback .form-group {
+        margin-bottom: 15px;
+    }
+
+    .feedback input,
+    .feedback textarea {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+        width: 100%;
+    }
+
+    .feedback input:focus,
+    .feedback textarea:focus {
+        border-color: #1d3557;
+        outline: none;
+    }
+
+    .feedback button {
+        background-color: #1d3557;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .feedback button:hover {
+        background-color: #fff;
+        color: black;
+    }
+
+
     /* Make buttons consistent in size */
     .btn-donate {
         padding: 10px 15px;
@@ -378,7 +464,6 @@ include('includes/navbar.php');
             opacity: 1;
         }
     }
-
     /* Slide In Left Animation */
     @keyframes slideInLeft {
         from {
@@ -757,6 +842,43 @@ include('includes/navbar.php');
         </div>
     </div>
 </section>
+
+<!-- Feedback starts -->
+<section class="feedback section-padding mb-3" id="feedback">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-header text-center">
+                    <h2>We Value Your Feedback</h2>
+                    <p>Your thoughts matter to us! Share your feedback to help us improve.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row m-0 align-items-stretch">
+            <!-- Image Column -->
+            <div class="col-md-6 p-1 text-center">
+                <img src="assets/images/feedback.jpeg" class="img-fluid feedback-image" alt="Feedback Image">
+            </div>
+            <!-- Form Column -->
+            <div class="col-md-6 p-1">
+                <form action="all_code.php" method="POST" class="bg-light p-4 feedback-form">
+                    <div class="form-group">
+                        <input type="text" name="name" class="form-control" required placeholder="Your Full Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-control" required placeholder="Your Email Address">
+                    </div>
+                    <div class="form-group">
+                        <textarea name="feedback" rows="5" required class="form-control" placeholder="Your Feedback"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning btn-sm" name="btn-feedback">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Feedback ends -->
+
 
 <script>
     let currentIndex = 0;

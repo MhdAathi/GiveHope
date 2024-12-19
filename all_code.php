@@ -293,3 +293,27 @@ if (isset($_POST['create_campaign_btn'])) {
     header("Location: create_campaign.php");
     exit();
 }
+
+if (isset($_POST['btn-feedback'])) {
+    // Sanitize and retrieve the inputs
+    $name = mysqli_real_escape_string($con, $_POST['name']);
+    $email = mysqli_real_escape_string($con, $_POST['email']);
+    $feedback = mysqli_real_escape_string($con, $_POST['feedback']);
+
+    // Insert feedback into the database
+    $query = "INSERT INTO feedback (name, email, feedback) VALUES ('$name', '$email', '$feedback')";
+    $query_run = mysqli_query($con, $query);
+
+    // Check if the query executed successfully
+    if ($query_run) {
+        // Success message
+        $_SESSION['message'] = "Thank you for your feedback!";
+        header("Location: index.php"); // Redirect to homepage or feedback page
+        exit(0);
+    } else {
+        // Error message
+        $_SESSION['message'] = "There was an error submitting your feedback. Please try again.";
+        header("Location: index.php"); // Redirect to homepage or feedback page
+        exit(0);
+    }
+}

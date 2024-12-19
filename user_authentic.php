@@ -11,13 +11,7 @@ if (!isset($_SESSION['auth_user'])) {
     exit();
 }
 
-// Regenerate session ID to prevent session fixation
 session_regenerate_id(true);
-
-// Assign a unique session ID for each tab
-if (!isset($_SESSION['tab_id'])) {
-    $_SESSION['tab_id'] = uniqid();  // Unique identifier for this tab session
-}
 
 // Check if the user is an admin
 if ($_SESSION['auth_role'] == 1) { // Role 1 = Admin
@@ -27,7 +21,7 @@ if ($_SESSION['auth_role'] == 1) { // Role 1 = Admin
 
 // Check if the user has created a campaign
 $user_id = $_SESSION['auth_user']['user_id'];
-$query = "SELECT COUNT(*) AS campaign_count FROM campaigns WHERE user_id = ?";
+$query = "SELECT COUNT(*) AS campaign_count FROM campaigns WHERE user_id = ? AND status = 'Accepted'";
 $stmt = $con->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
