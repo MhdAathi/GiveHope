@@ -422,6 +422,30 @@ if ($campaign_id) {
             </div>
 
             <div class="form-group">
+                <label for="province">Province <span style="color: red;">*</span></label>
+                <select id="province" name="province" class="form-control" required onchange="updateDistricts()">
+                    <option value="" disabled selected>Select Province</option>
+                    <option value="Western">Western</option>
+                    <option value="Central">Central</option>
+                    <option value="Southern">Southern</option>
+                    <option value="Northern">Northern</option>
+                    <option value="Eastern">Eastern</option>
+                    <option value="North Western">North Western</option>
+                    <option value="North Central">North Central</option>
+                    <option value="Uva">Uva</option>
+                    <option value="Sabaragamuwa">Sabaragamuwa</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="district">District <span style="color: red;">*</span></label>
+                <select id="district" name="district" class="form-control" required>
+                    <option value="" disabled selected>Select District</option>
+                    <!-- District options will be populated dynamically -->
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="phone">Phone Number</label>
                 <input type="text" id="phone" name="phone" placeholder="Enter your phone number">
             </div>
@@ -559,6 +583,37 @@ if ($campaign_id) {
         function updateAmountFromInput() {
             const customAmount = document.getElementById('custom_amount').value;
             document.getElementById('amount_display').value = customAmount;
+        }
+
+        const provinceDistricts = {
+            "Western": ["Colombo", "Gampaha", "Kalutara"],
+            "Central": ["Kandy", "Matale", "Nuwara Eliya"],
+            "Southern": ["Galle", "Matara", "Hambantota"],
+            "Northern": ["Jaffna", "Kilinochchi", "Mannar", "Vavuniya", "Mullaitivu"],
+            "Eastern": ["Trincomalee", "Batticaloa", "Ampara"],
+            "North Western": ["Kurunegala", "Puttalam"],
+            "North Central": ["Anuradhapura", "Polonnaruwa"],
+            "Uva": ["Badulla", "Monaragala"],
+            "Sabaragamuwa": ["Ratnapura", "Kegalle"]
+        };
+
+        function updateDistricts() {
+            const provinceSelect = document.getElementById("province");
+            const districtSelect = document.getElementById("district");
+            const selectedProvince = provinceSelect.value;
+
+            // Clear existing district options
+            districtSelect.innerHTML = '<option value="" disabled selected>Select District</option>';
+
+            // Populate districts based on the selected province
+            if (provinceDistricts[selectedProvince]) {
+                provinceDistricts[selectedProvince].forEach(district => {
+                    const option = document.createElement("option");
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
+                });
+            }
         }
     </script>
 

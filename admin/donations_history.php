@@ -2,26 +2,39 @@
 include('authentication.php');
 include('includes/header.php');
 
-// Check if the logged-in user is an admin
+// Check if donor_name is passed as a query parameter
+$donor_name = isset($_GET['donor_name']) && !empty($_GET['donor_name']) ? mysqli_real_escape_string($con, $_GET['donor_name']) : null;
+
+// Admin Access
 if ($_SESSION['auth_user']['user_id'] == 1) {
-    // Admin: Fetch all donations
-    $query = "
-        SELECT d.id AS donation_id, d.amount, d.donation_date, d.payment_type, 
-               c.id AS campaign_id, c.title AS campaign_name, d.donor_name 
-        FROM donations d 
-        JOIN campaigns c ON d.campaign_id = c.id";
+    // Admin: Fetch all donations or filter by donor_name
+    $query = "SELECT d.id AS donation_id, d.amount, d.donation_date, d.payment_type, 
+                     c.id AS campaign_id, c.title AS campaign_name, d.donor_name, 
+                     CONCAT(d.province, ', ', d.district) AS location
+              FROM donations d 
+              JOIN campaigns c ON d.campaign_id = c.id";
+    if ($donor_name) {
+        $query .= " WHERE d.donor_name = '$donor_name'";
+    }
     $result = mysqli_query($con, $query);
 } else {
-    // Campaign creator: Fetch donations for their campaigns
-    $user_id = $_SESSION['auth_user']['user_id']; // Get the logged-in user's ID
-    $query = "
-        SELECT d.id AS donation_id, d.amount, d.donation_date, d.payment_type, 
-               c.id AS campaign_id, c.title AS campaign_name, d.donor_name 
-        FROM donations d 
-        JOIN campaigns c ON d.campaign_id = c.id 
-        WHERE c.user_id = ?";
+    // Campaign creator: Fetch only donations for their campaigns
+    $user_id = $_SESSION['auth_user']['user_id'];
+    $query = "SELECT d.id AS donation_id, d.amount, d.donation_date, d.payment_type, 
+                     c.id AS campaign_id, c.title AS campaign_name, d.donor_name, 
+                     CONCAT(d.province, ', ', d.district) AS location
+              FROM donations d 
+              JOIN campaigns c ON d.campaign_id = c.id 
+              WHERE c.user_id = ?";
+    if ($donor_name) {
+        $query .= " AND d.donor_name = ?";
+    }
     $stmt = $con->prepare($query);
-    $stmt->bind_param("i", $user_id);
+    if ($donor_name) {
+        $stmt->bind_param("is", $user_id, $donor_name);
+    } else {
+        $stmt->bind_param("i", $user_id);
+    }
     $stmt->execute();
     $result = $stmt->get_result();
 }
@@ -52,6 +65,7 @@ if ($_SESSION['auth_user']['user_id'] == 1) {
                                 <th>Campaign ID</th>
                                 <th>Campaign Title</th>
                                 <th>Donor Name</th>
+                                <th>Location</th>
                                 <th>Amount (LKR)</th>
                                 <th>Payment Method</th>
                                 <th>Donation Date</th>
@@ -66,6 +80,7 @@ if ($_SESSION['auth_user']['user_id'] == 1) {
                                         <td><?= htmlspecialchars($row['campaign_id']); ?></td>
                                         <td><?= htmlspecialchars($row['campaign_name']); ?></td>
                                         <td><?= htmlspecialchars($row['donor_name']); ?></td>
+                                        <td><?= htmlspecialchars($row['location']); ?></td> <!-- Display Location -->
                                         <td>LKR <?= number_format($row['amount'], 2); ?></td>
                                         <td><?= htmlspecialchars($row['payment_type']); ?></td>
                                         <td><?= htmlspecialchars($row['donation_date']); ?></td>

@@ -210,9 +210,11 @@ if (!isset($_SESSION['auth_user']['user_id'])) {
                         <div class="input-item">
                             <label for="end_date">End Date <span style="color: red;">*</span></label>
                             <input type="date" id="end_date" name="end_date" required>
+                            <small id="errorHint" style="color: red;"></small>
                         </div>
                     </div>
                 </div>
+
 
                 <div class="form-group">
                     <div class="input-item">
@@ -262,6 +264,33 @@ if (!isset($_SESSION['auth_user']['user_id'])) {
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the input fields and error hint
+        const startDateInput = document.getElementById("start_date");
+        const endDateInput = document.getElementById("end_date");
+        const errorHint = document.getElementById("errorHint");
+
+        // Add an event listener to validate dates when the End Date is changed
+        endDateInput.addEventListener("change", function() {
+            // Get the values of Start Date and End Date
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            // Check if End Date is earlier than Start Date
+            if (endDate < startDate) {
+                // Display error message
+                errorHint.textContent = "End Date cannot be earlier than Start Date.";
+                endDateInput.value = ""; // Clear the invalid input
+            } else {
+                // Clear error message if valid
+                errorHint.textContent = "";
+            }
+        });
+    });
+</script>
+
 
 <?php
 include('includes/footer.php');

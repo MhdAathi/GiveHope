@@ -54,6 +54,8 @@ $query_run = mysqli_query($con, $query);
                                                 <a href="donations_history.php?donor_name=<?= urlencode($row['donor_name']); ?>" class="btn btn-info btn-sm" title="View Donations">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
+
+
                                                 <!-- Delete Donor Button -->
                                                 <form action="admin_all_code.php" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this donation?');">
                                                     <input type="hidden" name="donation_id" value="<?= $row['id']; ?>"> <!-- Pass the donation ID -->
@@ -83,7 +85,6 @@ $query_run = mysqli_query($con, $query);
         </div>
     </div>
 </div>
-
 
 <?php
 include('includes/footer.php');

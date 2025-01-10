@@ -1,6 +1,6 @@
 <?php
 include('authentication.php');
-include('middleware\admin_auth.php');
+include('middleware/admin_auth.php');
 include('includes/header.php');
 include('dashboard_fetching.php'); // Fetching data for cards and charts
 
@@ -19,13 +19,11 @@ if ($query_run) {
         $raised_amounts[] = $row['raised'];
         $goal_amounts[] = $row['goal'];
 
-        // Calculate donations for each campaign
-        $campaign_id_query = "SELECT id FROM campaigns WHERE title='" . mysqli_real_escape_string($con, $row['campaign_name']) . "'";
-        $campaign_id_result = mysqli_query($con, $campaign_id_query);
-        $campaign_id_row = mysqli_fetch_assoc($campaign_id_result);
-        $campaign_id = $campaign_id_row['id'];
-
-        $donation_query = "SELECT COUNT(*) AS total_donations FROM donations WHERE campaign_id = '$campaign_id'";
+        // Fetch total donations for each campaign
+        $donation_query = "SELECT COUNT(donations.id) AS total_donations 
+                           FROM donations 
+                           JOIN campaigns ON donations.campaign_id = campaigns.id 
+                           WHERE campaigns.title = '" . mysqli_real_escape_string($con, $row['campaign_name']) . "'";
         $donation_result = mysqli_query($con, $donation_query);
         $donation_data = mysqli_fetch_assoc($donation_result);
         $total_donations_per_campaign[] = $donation_data['total_donations'] ?? 0;
@@ -46,6 +44,27 @@ if ($donor_query_run) {
     while ($row = mysqli_fetch_assoc($donor_query_run)) {
         $donors_campaign_names[] = $row['campaign_name'];
         $total_donors_per_campaign[] = $row['total_donors'];
+    }
+}
+
+// Fetch demographic data for chart
+$demographic_query = "SELECT CONCAT(province, ', ', district) AS location, COUNT(*) AS donor_count 
+                      FROM donations 
+                      GROUP BY province, district";
+$demographic_result = mysqli_query($con, $demographic_query);
+
+$demographic_labels = [];
+$demographic_data = [];
+$demographic_colors = [];
+$color_palette = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']; // Custom colors
+$color_index = 0;
+
+if ($demographic_result && mysqli_num_rows($demographic_result) > 0) {
+    while ($row = mysqli_fetch_assoc($demographic_result)) {
+        $demographic_labels[] = $row['location'];
+        $demographic_data[] = $row['donor_count'];
+        $demographic_colors[] = $color_palette[$color_index % count($color_palette)];
+        $color_index++;
     }
 }
 ?>
@@ -71,24 +90,12 @@ if ($donor_query_run) {
         transform: scale(1.05);
     }
 
-    .card h5 {
-        font-size: 14px;
-        margin-top: 8px;
-    }
-
-    .card p {
-        font-size: 18px;
-        font-weight: bold;
-    }
-
     .charts {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        /* Ensures two charts per row */
+        /* Two charts side by side */
         gap: 20px;
-        /* Adds spacing between charts */
         align-items: stretch;
-        /* Ensures all charts align properly */
     }
 
     .chart-container {
@@ -102,21 +109,13 @@ if ($donor_query_run) {
         justify-content: center;
     }
 
-    .chart-container h4 {
-        font-size: 14px;
-        margin-bottom: 8px;
-        color: #333;
-    }
-
     .chart {
         width: 100%;
         height: 250px;
-        /* Smaller height for compact layout */
     }
 
     .chart-container canvas {
         max-width: 95%;
-        /* Reduce chart canvas width slightly for breathing space */
     }
 </style>
 
@@ -125,7 +124,7 @@ if ($donor_query_run) {
     <h1 class="mt-4">Dashboard</h1>
 
     <?php include('../message.php'); ?>
-    
+
     <div class="dashboard-cards">
         <!-- Total Donors -->
         <div class="card">
@@ -156,32 +155,32 @@ if ($donor_query_run) {
     <div class="charts">
         <!-- Donors Per Campaign -->
         <div class="chart-container">
-            <h4>Donors Per Campaign</h4>
             <canvas id="donorsPerCampaignChart" class="chart"></canvas>
         </div>
         <!-- Raised vs Goal -->
         <div class="chart-container">
-            <h4>Raised vs Goal</h4>
             <canvas id="raisedVsGoalChart" class="chart"></canvas>
         </div>
         <!-- Donations Per Campaign -->
-        <div class="chart-container" style="grid-column: span 2;">
-            <h4>Donations Per Campaign</h4>
+        <div class="chart-container">
             <canvas id="donationsPerCampaignChart" class="chart"></canvas>
+        </div>
+        <!-- Demographic Chart -->
+        <div class="chart-container">
+            <canvas id="demographicChart" class="chart"></canvas>
         </div>
     </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // Bar Chart: Donations Per Campaign
+    // Donations Per Campaign Chart
     const donationsPerCampaignCtx = document.getElementById('donationsPerCampaignChart').getContext('2d');
     new Chart(donationsPerCampaignCtx, {
         type: 'bar',
         data: {
-            labels: <?= json_encode($campaign_names); ?>, // Keep the labels for tooltips
+            labels: <?= json_encode($campaign_names); ?>,
             datasets: [{
                 label: 'Total Donations',
                 data: <?= json_encode($total_donations_per_campaign); ?>,
@@ -193,7 +192,7 @@ if ($donor_query_run) {
         options: {
             responsive: true,
             maintainAspectRatio: true, // Maintains a fixed aspect ratio
-            aspectRatio: 4, // Sets a specific aspect ratio
+            aspectRatio: 2, // Sets a specific aspect ratio
             scales: {
                 x: {
                     ticks: {
@@ -213,10 +212,25 @@ if ($donor_query_run) {
             },
             plugins: {
                 legend: {
-                    display: false // Hides legend for compact view
+                    display: false
                 },
                 tooltip: {
-                    enabled: true // Ensures tooltips remain active
+                    enabled: true
+                },
+                title: {
+                    display: true, // Enable the chart title
+                    text: 'Donations Per Campaign', // Set the title text
+                    font: {
+                        size: 18, // Adjusted font size
+                        weight: '500', // Set to bold for emphasis
+                        family: 'Arial, sans-serif' // Custom font family
+                    },
+                    color: '#000000', // Set title text color (e.g., Indigo)
+                    padding: {
+                        top: 20,
+                        bottom: 30 // Adjust padding for better spacing
+                    },
+                    align: 'center' // Align the title in the center
                 }
             },
             elements: {
@@ -227,12 +241,106 @@ if ($donor_query_run) {
         }
     });
 
-    // Bar Chart: Donors Per Campaign
+    // Demographic Chart
+    const demographicCtx = document.getElementById('demographicChart').getContext('2d');
+    const demographicChart = new Chart(demographicCtx, {
+        type: 'doughnut',
+        data: {
+            labels: <?= json_encode($demographic_labels); ?>, // Province-level labels
+            datasets: [{
+                data: <?= json_encode($demographic_data); ?>, // Donor counts
+                backgroundColor: <?= json_encode($demographic_colors); ?>, // Dynamic colors
+                borderColor: '#FFFFFF', // Add a white border for better contrast on segments
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true, // Maintain a fixed aspect ratio
+            aspectRatio: 2, // Set a specific aspect ratio
+            plugins: {
+                legend: {
+                    display: true, // Enable the legend
+                    position: 'bottom', // Position the legend below the chart
+                    labels: {
+                        boxWidth: 30, // Rectangle box width
+                        boxHeight: 15, // Rectangle box height
+                        usePointStyle: false, // Ensures rectangles instead of circles
+                        padding: 15, // Increase gap between legend items
+                        font: {
+                            size: 0 // Hide the text in the legend
+                        },
+                        generateLabels: function(chart) {
+                            // Custom function to add hover behavior for legend tooltips
+                            const data = chart.data;
+                            return data.labels.map((label, index) => ({
+                                text: '', // Keep legend text empty
+                                fillStyle: data.datasets[0].backgroundColor[index],
+                                hidden: false,
+                                index: index
+                            }));
+                        }
+                    },
+                    onHover: function(event, legendItem) {
+                        // Trigger hover event on the corresponding chart segment
+                        const chart = event.chart;
+                        const index = legendItem.index;
+                        chart.setActiveElements([{
+                            datasetIndex: 0,
+                            index: index
+                        }]);
+                        chart.tooltip.setActiveElements([{
+                            datasetIndex: 0,
+                            index: index
+                        }], {
+                            x: event.x,
+                            y: event.y
+                        });
+                        chart.update();
+                    },
+                    onLeave: function(event, legendItem) {
+                        // Reset hover state when leaving the legend
+                        const chart = event.chart;
+                        chart.setActiveElements([]);
+                        chart.tooltip.setActiveElements([]);
+                        chart.update();
+                    }
+                },
+                tooltip: {
+                    enabled: true, // Enable tooltips
+                    callbacks: {
+                        label: function(context) {
+                            const province = context.label; // Get the province name
+                            const donorCount = context.raw; // Get the donor count
+                            return `${province}: ${donorCount} donors`; // Tooltip text
+                        }
+                    }
+                },
+                title: {
+                    display: true, // Enable the chart title
+                    text: 'Donors Demographic by Province', // Set the title text
+                    font: {
+                        size: 18, // Adjusted font size
+                        weight: '500', // Medium weight
+                        family: 'Arial, sans-serif' // Custom font family
+                    },
+                    color: '#000000', // Title text color
+                    padding: {
+                        top: 20,
+                        bottom: 30 // Adjust padding for better spacing
+                    },
+                    align: 'center' // Align the title in the center
+                }
+            }
+        }
+    });
+
+    // Donors Per Campaign Chart
     const donorsPerCampaignCtx = document.getElementById('donorsPerCampaignChart').getContext('2d');
     new Chart(donorsPerCampaignCtx, {
         type: 'bar',
         data: {
-            labels: <?= json_encode($donors_campaign_names); ?>, // Keep the labels for tooltips
+            labels: <?= json_encode($donors_campaign_names); ?>,
             datasets: [{
                 label: 'Total Donors',
                 data: <?= json_encode($total_donors_per_campaign); ?>,
@@ -268,6 +376,21 @@ if ($donor_query_run) {
                 },
                 tooltip: {
                     enabled: true
+                },
+                title: {
+                    display: true, // Enable the chart title
+                    text: 'Donors Per Campaign', // Set the title text
+                    font: {
+                        size: 18, // Adjusted font size
+                        weight: '500', // Set to bold for emphasis
+                        family: 'Arial, sans-serif' // Custom font family
+                    },
+                    color: '#000000', // Set title text color (e.g., Indigo)
+                    padding: {
+                        top: 20,
+                        bottom: 30 // Adjust padding for better spacing
+                    },
+                    align: 'center' // Align the title in the center
                 }
             },
             elements: {
@@ -275,30 +398,29 @@ if ($donor_query_run) {
                     maxBarThickness: 10 // Reduces the bar width
                 }
             }
+
         }
     });
 
-    // Line Chart: Raised vs Goal
+    // Raised vs Goal Chart
     const raisedVsGoalCtx = document.getElementById('raisedVsGoalChart').getContext('2d');
     new Chart(raisedVsGoalCtx, {
         type: 'line',
         data: {
-            labels: <?= json_encode($campaign_names); ?>, // Keep the labels for tooltips
+            labels: <?= json_encode($campaign_names); ?>,
             datasets: [{
-                    label: 'Raised',
-                    data: <?= json_encode($raised_amounts); ?>,
-                    borderColor: '#97a6c4',
-                    fill: false,
-                    tension: 0.4
-                },
-                {
-                    label: 'Goal',
-                    data: <?= json_encode($goal_amounts); ?>,
-                    borderColor: '#384860',
-                    fill: false,
-                    tension: 0.4
-                }
-            ]
+                label: 'Raised',
+                data: <?= json_encode($raised_amounts); ?>,
+                borderColor: '#97a6c4',
+                fill: false,
+                tension: 0.4 // Adds smooth curves
+            }, {
+                label: 'Goal',
+                data: <?= json_encode($goal_amounts); ?>,
+                borderColor: '#384860',
+                fill: false,
+                tension: 0.4 // Adds smooth curves
+            }]
         },
         options: {
             responsive: true,
@@ -327,10 +449,26 @@ if ($donor_query_run) {
                 },
                 tooltip: {
                     enabled: true
+                },
+                title: {
+                    display: true, // Enable the chart title
+                    text: 'Raised vs Goal', // Set the title text
+                    font: {
+                        size: 18, // Adjusted font size
+                        weight: '500', // Set to bold for emphasis
+                        family: 'Arial, sans-serif' // Custom font family
+                    },
+                    color: '#000000', // Set title text color (e.g., Indigo)
+                    padding: {
+                        top: 20,
+                        bottom: 30 // Adjust padding for better spacing
+                    },
+                    align: 'center' // Align the title in the center
                 }
             }
         }
     });
 </script>
+
 
 <?php include('includes/footer.php'); ?>

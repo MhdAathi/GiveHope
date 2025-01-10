@@ -3,17 +3,17 @@ ob_start();
 session_start();
 include('admin/config/dbcon.php'); // Ensure this path is correct
 
-// Load Composer's autoload file for PHPMailer
+// Load Composer's autoload file for PHPMailer and Dompdf
 require __DIR__ . '\vendor\autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 // Logout Functionality
 if (isset($_POST['logout_btn'])) {
-    // Clear session data
     unset($_SESSION['auth'], $_SESSION['auth_role'], $_SESSION['auth_user'], $_SESSION['user_id']);
-
     $_SESSION['message'] = "Logged Out Successfully";
     header("Location: login.php");
     exit();
@@ -21,7 +21,6 @@ if (isset($_POST['logout_btn'])) {
 
 // Donation Submission
 if (isset($_POST['btn-submit'])) {
-    // Ensure database connection
     if (!$con) {
         die("Database connection failed: " . mysqli_connect_error());
     }
@@ -32,17 +31,16 @@ if (isset($_POST['btn-submit'])) {
     $email = mysqli_real_escape_string($con, $_POST['email']);
     $phone = mysqli_real_escape_string($con, $_POST['phone']);
     $address = mysqli_real_escape_string($con, $_POST['address_line']);
+    $province = mysqli_real_escape_string($con, $_POST['province']);
+    $district = mysqli_real_escape_string($con, $_POST['district']);
     $amount = floatval($_POST['amount']);
     $payment_type = mysqli_real_escape_string($con, $_POST['payment_type']);
 
-    // Determine donor_name based on payment type
     if ($payment_type === 'paypal') {
         $donor_name = mysqli_real_escape_string($con, $_POST['name']); // PayPal name field
-    } else {
-        $donor_name = mysqli_real_escape_string($con, $_POST['name_on_card']); // Credit Card name field
     }
 
-    // Check if campaign exists and is active
+    // Check if campaign exists
     $stmt = $con->prepare("SELECT id, title FROM campaigns WHERE id = ? AND status = 'Accepted'");
     $stmt->bind_param("i", $campaign_id);
     $stmt->execute();
@@ -61,24 +59,25 @@ if (isset($_POST['btn-submit'])) {
     mysqli_begin_transaction($con);
 
     try {
-        // Insert donation into 'donations' table
+        // Insert donation
         $insert_donation_query = "
             INSERT INTO donations 
-            (campaign_id, donor_name, email, phone, address, amount, payment_type, donation_date) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+            (campaign_id, donor_name, email, phone, address, province, district, amount, payment_type, donation_date) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ";
         $stmt = $con->prepare($insert_donation_query);
         $stmt->bind_param(
-            "issssds",
+            "issssssds",
             $campaign_id,
             $donor_name,
             $email,
             $phone,
             $address,
+            $province,
+            $district,
             $amount,
             $payment_type
         );
-
         if (!$stmt->execute()) {
             throw new Exception("Error inserting donation: " . $stmt->error);
         }
@@ -88,94 +87,189 @@ if (isset($_POST['btn-submit'])) {
         $update_campaign_query = "UPDATE campaigns SET raised = raised + ? WHERE id = ?";
         $stmt = $con->prepare($update_campaign_query);
         $stmt->bind_param("di", $amount, $campaign_id);
-
         if (!$stmt->execute()) {
             throw new Exception("Error updating campaign raised amount: " . $stmt->error);
         }
         $stmt->close();
 
-        // Commit the transaction
         mysqli_commit($con);
 
-        // Send email to donor
+        // Generate PDF Receipt
+        $dompdf = new Dompdf();
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $dompdf->setOptions($options);
+
+        $html = "
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Donation Receipt</title>
+            <style>
+                body {
+                    font-family: 'Arial', sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f9f9f9;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 50px auto;
+                    background: #fff;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    text-align: left;
+                }
+                .header {
+                    text-align: center;
+                    border-bottom: 2px solid #1d3557;
+                    padding-bottom: 20px;
+                }
+                .header h1 {
+                    margin: 0;
+                    font-size: 22px;
+                    color: #1d3557;
+                }
+                .header p {
+                    margin: 0;
+                    font-size: 14px;
+                    color: #555;
+                }
+                .details {
+                    margin: 20px 0;
+                    line-height: 1.6;
+                }
+                .details p {
+                    margin: 5px 0;
+                    font-size: 14px;
+                    color: #333;
+                }
+                .details p span {
+                    font-weight: bold;
+                    color: #1d3557;
+                }
+                .amount {
+                    background-color: #f1f1f1;
+                    padding: 15px;
+                    border-radius: 8px;
+                    text-align: center;
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #1d3557;
+                    margin: 20px 0;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 20px;
+                    font-size: 12px;
+                    color: #999;
+                }
+                .footer a {
+                    color: #1d3557;
+                    text-decoration: none;
+                }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <!-- Header Section -->
+                <div class='header'>
+                    <h1>Donation Receipt</h1>
+                    <p>Thank you for supporting our cause!</p>
+                </div>
+
+                <!-- Details Section -->
+                <div class='details'>
+                    <p><span>Donor Name:</span> $donor_name</p>
+                    <p><span>Email:</span> $email</p>
+                    <p><span>Phone:</span> $phone</p>
+                    <p><span>Address:</span> $address</p>
+                    <p><span>Province:</span> $province</p>
+                    <p><span>District:</span> $district</p>
+                    <p><span>Campaign:</span> $campaign_title</p>
+                    <p><span>Date:</span> " . date('Y-m-d H:i:s') . "</p>
+                </div>
+
+                <!-- Amount Section -->
+                <div class='amount'>
+                    Donation Amount: LKR " . number_format($amount, 2) . "
+                </div>
+
+                <!-- Footer Section -->
+                <div class='footer'>
+                    <p>For any queries, contact us at <a href='mailto:support@campaignplatform.com'>support@campaignplatform.com</a></p>
+                    <p>© 2025 Campaign Platform. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Save the PDF
+        $pdfFilePath = __DIR__ . '/temp_receipt.pdf';
+        file_put_contents($pdfFilePath, $dompdf->output());
+
+        // Ensure the PDF exists
+        if (!file_exists($pdfFilePath)) {
+            throw new Exception("PDF generation failed. File not found.");
+        }
+
+        // Send Email with PHPMailer
         $mail = new PHPMailer(true);
         try {
-            // Server settings
             $mail->isSMTP();
-            $mail->SMTPAuth   = true;
-            $mail->Host       = 'smtp.gmail.com';
-            $mail->Username   = 'aathief01@gmail.com'; // Replace with your email
-            $mail->Password   = 'fhkbwdzlzqipbhea'; // Replace with your app password
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'aathief01@gmail.com'; // Replace with your email
+            $mail->Password = 'fhkbwdzlzqipbhea'; // Replace with your app password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
+            $mail->Port = 587;
 
-            // Recipients
             $mail->setFrom('aathief01@gmail.com', 'Campaign Platform');
             $mail->addAddress($email, $donor_name);
 
-            // Content
             $mail->isHTML(true);
             $mail->Subject = 'Thank You for Your Donation!';
-            $mail->Body    = "
-            <!DOCTYPE html>
-            <html lang='en'>
-            <head>
-                <meta charset='UTF-8'>
-                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-                <title>Donation Confirmation</title>
-                <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f4f4f4; }
-                    .email-container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; }
-                    .header { background-color: #1d3557; color: #ffffff; text-align: center; padding: 20px; }
-                    .content { padding: 20px; color: #333333; }
-                    .footer { background-color: #f1f1f1; text-align: center; padding: 10px; color: #777777; font-size: 12px; }
-                    .button { display: inline-block; background-color: #1d3557; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
-                </style>
-            </head>
-            <body>
-                <div class='email-container'>
-                    <!-- Header -->
-                    <div class='header'>
-                        <h2>Thank You, $donor_name!</h2>
-                    </div>
+            $mail->Body = "
+            <p>Dear $donor_name,</p>
+            <p>Thank you for your generous donation of <strong>LKR " . number_format($amount, 2) . "</strong> to our campaign, <strong>\"$campaign_title\"</strong>.</p>
+            <p>Here are the details of your donation:</p>
+            <ul>
+                <li><strong>Province:</strong> $province</li>
+                <li><strong>District:</strong> $district</li>
+                <li><strong>Date:</strong> " . date('Y-m-d H:i:s') . "</li>
+            </ul>
+            <p>Please find your donation receipt attached for your reference.</p>
+            <p>With gratitude,<br>The Campaign Team</p>";
 
-                    <!-- Content -->
-                    <div class='content'>
-                        <p>We sincerely appreciate your generous donation to the campaign:</p>
-                        <h3 style='color: #1d3557;'>\"$campaign_title\"</h3>
-                        <p><strong>Donation Amount:</strong> LKR " . number_format($amount, 2) . "</p>
-                        <p>Your support plays a vital role in helping us achieve our goals and create a positive impact.</p>
-                        <p>Thank you for making a difference!</p>
-                        <p style='text-align: center; margin-top: 30px;'>
-                            <a href='https://your-platform-link.com/campaigns' class='button'>View More Campaigns</a>
-                        </p>
-                    </div>
-
-                    <!-- Footer -->
-                    <div class='footer'>
-                        <p>© 2024 Campaign Platform. All rights reserved.</p>
-                        <p>Contact us: support@campaignplatform.com</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            ";
-
+            // Attach the PDF
+            $mail->addAttachment($pdfFilePath, 'Donation_Receipt.pdf');
             $mail->send();
         } catch (Exception $e) {
-            $_SESSION['message'] .= " Email failed to send: {$mail->ErrorInfo}";
+            error_log("Mailer Error: " . $mail->ErrorInfo);
+            throw new Exception("Email failed to send: " . $e->getMessage());
         }
 
-        // Success message
+        // Cleanup PDF
+        if (file_exists($pdfFilePath)) {
+            unlink($pdfFilePath);
+        }
+
         $_SESSION['message'] = "Thank you for your donation!";
         header("Location: donate.php?id=" . $campaign_id);
         exit();
     } catch (Exception $e) {
-        // Rollback on error
         mysqli_rollback($con);
         error_log($e->getMessage());
-
-        // Show error to the user
+        if (file_exists($pdfFilePath)) {
+            unlink($pdfFilePath);
+        }
         $_SESSION['message'] = "Something went wrong: " . $e->getMessage();
         header("Location: donate.php?id=" . $campaign_id);
         exit();

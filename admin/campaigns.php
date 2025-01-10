@@ -72,8 +72,11 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4>All Campaigns <?= $campaign_category ? "($campaign_category)" : "" ?></h4>
-                    <div class="d-flex">
-                        <a href="generate_campaign_report.php" class="btn btn-primary btn-sm me-2">Generate Report</a>
+                    <div class="d-flex me-2">
+                        <a href="generate_campaign_report.php?campaign_category=<?= urlencode($_GET['campaign_category'] ?? ''); ?>&start_date=<?= urlencode($_GET['start_date'] ?? ''); ?>&end_date=<?= urlencode($_GET['end_date'] ?? ''); ?>" class="btn btn-primary btn-sm me-2">
+                            Generate Report
+                        </a>
+
                         <a href="../create_campaign.php" class="btn btn-primary btn-sm">Add Campaign</a>
                     </div>
                 </div>
@@ -93,6 +96,12 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                                 <!-- Add more categories as needed -->
                             </select>
                         </div>
+                        <div class="col-md-2">
+                            <input type="date" id="filterStartDate" class="form-control" onchange="filterTable()" title="Start Date">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" id="filterEndDate" class="form-control" onchange="filterTable()" title="End Date">
+                        </div>
                     </div>
 
                     <table class="table table-bordered" id="campaignDetailsTable">
@@ -104,7 +113,7 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                                 <th>Description</th>
                                 <th>Goal</th>
                                 <th>Category</th>
-                                <th>Document</th> <!-- New Document Column -->
+                                <th>Document</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th>Organizer Name</th>
@@ -228,6 +237,37 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
             // Show the row if it matches the search criteria
             if ((campaignTitle.includes(searchCampaignTitle) || searchCampaignTitle === '') &&
                 (campaignCategory.includes(searchCampaignCategory) || searchCampaignCategory === '')) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+
+    function filterTable() {
+        const searchCampaignTitle = document.getElementById('searchCampaignTitle').value.toLowerCase();
+        const searchCampaignCategory = document.getElementById('searchCampaignCategory').value.toLowerCase();
+        const filterStartDate = document.getElementById('filterStartDate').value;
+        const filterEndDate = document.getElementById('filterEndDate').value;
+        const table = document.getElementById('campaignDetailsTable');
+        const rows = table.getElementsByTagName('tr');
+
+        // Loop through all table rows (skip the header row)
+        for (let i = 1; i < rows.length; i++) {
+            let row = rows[i];
+            const campaignTitle = row.cells[1].textContent.toLowerCase();
+            const campaignCategory = row.cells[5].textContent.toLowerCase();
+            const startDate = row.cells[7].textContent; // Start Date column
+            const endDate = row.cells[8].textContent; // End Date column
+
+            // Check if the row matches the filters
+            const matchesTitle = campaignTitle.includes(searchCampaignTitle) || searchCampaignTitle === '';
+            const matchesCategory = campaignCategory.includes(searchCampaignCategory) || searchCampaignCategory === '';
+            const matchesStartDate = !filterStartDate || new Date(startDate) >= new Date(filterStartDate);
+            const matchesEndDate = !filterEndDate || new Date(endDate) <= new Date(filterEndDate);
+
+            // Show the row if all conditions are met
+            if (matchesTitle && matchesCategory && matchesStartDate && matchesEndDate) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';

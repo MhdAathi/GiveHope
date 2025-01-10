@@ -9,6 +9,77 @@ require __DIR__ . '/../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// Campaign Update
+if (isset($_POST['update_campaign_btn'])) {
+    // Retrieve form data
+    $campaign_id = intval($_POST['campaign_id']);
+    $campaign_title = mysqli_real_escape_string($con, $_POST['title']);
+    $campaign_location = mysqli_real_escape_string($con, $_POST['location']);
+    $campaign_description = mysqli_real_escape_string($con, $_POST['description']);
+    $campaign_goal = floatval($_POST['goal']); // Ensure it's a float
+    $campaign_category = mysqli_real_escape_string($con, $_POST['category']);
+
+    // Handle image upload
+    $campaign_image = $_FILES['image'];
+    $target_dir = "uploads/"; // Ensure this directory exists and has proper write permissions
+    $image_path = null;
+
+    if (!empty($campaign_image['name'])) {
+        $image_name = time() . '_' . basename($campaign_image['name']);
+        $target_file = $target_dir . $image_name;
+
+        if (!move_uploaded_file($campaign_image['tmp_name'], $target_file)) {
+            $_SESSION['message'] = "Error uploading image.";
+            header("Location: edit_campaign.php?id=" . $campaign_id);
+            exit();
+        }
+
+        $image_path = $target_file; // Save the uploaded image path
+    }
+
+    // Prepare SQL statement based on image upload
+    if ($image_path) {
+        // Update with new image
+        $query = "
+UPDATE campaigns
+SET title = ?, location = ?, description = ?, goal = ?, category = ?, image = ?
+WHERE id = ?
+";
+        $stmt = $con->prepare($query);
+        if (!$stmt) {
+            $_SESSION['message'] = "Database error: " . $con->error;
+            header("Location: edit_campaign.php?id=" . $campaign_id);
+            exit();
+        }
+        $stmt->bind_param("ssssssi", $campaign_title, $campaign_location, $campaign_description, $campaign_goal, $campaign_category, $image_path, $campaign_id);
+    } else {
+        // Update without new image
+        $query = "
+UPDATE campaigns
+SET title = ?, location = ?, description = ?, goal = ?, category = ?
+WHERE id = ?
+";
+        $stmt = $con->prepare($query);
+        if (!$stmt) {
+            $_SESSION['message'] = "Database error: " . $con->error;
+            header("Location: edit_campaign.php?id=" . $campaign_id);
+            exit();
+        }
+        $stmt->bind_param("sssssi", $campaign_title, $campaign_location, $campaign_description, $campaign_goal, $campaign_category, $campaign_id);
+    }
+
+    // Execute the query
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "Campaign updated successfully!";
+    } else {
+        $_SESSION['message'] = "Error updating campaign: " . $stmt->error;
+    }
+
+    $stmt->close();
+    header("Location: campaigns.php");
+    exit();
+}
+
 // Campaign Request Accept
 if (isset($_POST['accept_btn'])) {
     $campaign_id = intval($_POST['campaign_id']);
@@ -267,77 +338,6 @@ if (isset($_GET['id'])) {
     exit();
 } else {
     $_SESSION['message'] = "Invalid campaign ID.";
-    header("Location: campaigns.php");
-    exit();
-}
-
-// Campaign Update
-if (isset($_POST['update_campaign_btn'])) {
-    // Retrieve form data
-    $campaign_id = intval($_POST['campaign_id']);
-    $campaign_title = mysqli_real_escape_string($con, $_POST['title']);
-    $campaign_location = mysqli_real_escape_string($con, $_POST['location']);
-    $campaign_description = mysqli_real_escape_string($con, $_POST['description']);
-    $campaign_goal = floatval($_POST['goal']); // Ensure it's a float
-    $campaign_category = mysqli_real_escape_string($con, $_POST['category']);
-
-    // Handle image upload
-    $campaign_image = $_FILES['image'];
-    $target_dir = "uploads/"; // Ensure this directory exists and has proper write permissions
-    $image_path = null;
-
-    if (!empty($campaign_image['name'])) {
-        $image_name = time() . '_' . basename($campaign_image['name']);
-        $target_file = $target_dir . $image_name;
-
-        if (!move_uploaded_file($campaign_image['tmp_name'], $target_file)) {
-            $_SESSION['message'] = "Error uploading image.";
-            header("Location: edit_campaign.php?id=" . $campaign_id);
-            exit();
-        }
-
-        $image_path = $target_file; // Save the uploaded image path
-    }
-
-    // Prepare SQL statement based on image upload
-    if ($image_path) {
-        // Update with new image
-        $query = "
-UPDATE campaigns
-SET title = ?, location = ?, description = ?, goal = ?, category = ?, image = ?
-WHERE id = ?
-";
-        $stmt = $con->prepare($query);
-        if (!$stmt) {
-            $_SESSION['message'] = "Database error: " . $con->error;
-            header("Location: edit_campaign.php?id=" . $campaign_id);
-            exit();
-        }
-        $stmt->bind_param("ssssssi", $campaign_title, $campaign_location, $campaign_description, $campaign_goal, $campaign_category, $image_path, $campaign_id);
-    } else {
-        // Update without new image
-        $query = "
-UPDATE campaigns
-SET title = ?, location = ?, description = ?, goal = ?, category = ?
-WHERE id = ?
-";
-        $stmt = $con->prepare($query);
-        if (!$stmt) {
-            $_SESSION['message'] = "Database error: " . $con->error;
-            header("Location: edit_campaign.php?id=" . $campaign_id);
-            exit();
-        }
-        $stmt->bind_param("sssssi", $campaign_title, $campaign_location, $campaign_description, $campaign_goal, $campaign_category, $campaign_id);
-    }
-
-    // Execute the query
-    if ($stmt->execute()) {
-        $_SESSION['message'] = "Campaign updated successfully!";
-    } else {
-        $_SESSION['message'] = "Error updating campaign: " . $stmt->error;
-    }
-
-    $stmt->close();
     header("Location: campaigns.php");
     exit();
 }
