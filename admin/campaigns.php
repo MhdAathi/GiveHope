@@ -55,6 +55,15 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
         overflow: hidden;
         /* Prevent content overflow */
     }
+
+    .d-none {
+        display: none;
+    }
+
+    .see-more {
+        color: blue;
+        cursor: pointer;
+    }
 </style>
 
 <div class="container-fluid px-4">
@@ -135,11 +144,18 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                                             <td><?= htmlspecialchars($row['id']); ?></td>
                                             <td><?= htmlspecialchars($row['title']); ?></td>
                                             <td><?= htmlspecialchars($row['location']); ?></td>
-                                            <td><?= htmlspecialchars($row['description']); ?></td>
+                                            <td>
+                                                <?php
+                                                $description = htmlspecialchars($row['description']);
+                                                $short_description = substr($description, 0, 50);
+                                                ?>
+                                                <span class="short-text"><?= $short_description; ?>...</span>
+                                                <span class="full-text d-none"><?= $description; ?></span>
+                                                <a href="#" class="see-more" onclick="toggleDescription(this); return false;">See More</a>
+                                            </td>
+
                                             <td><?= htmlspecialchars($row['goal']); ?></td>
                                             <td><?= htmlspecialchars($row['category']); ?></td>
-
-                                            <!-- New Document Column -->
                                             <td>
                                                 <?php if (!empty($row['document'])): ?>
                                                     <a href="<?= htmlspecialchars($row['document']); ?>" target="_blank" title="View Full Image">
@@ -203,8 +219,6 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
                             ?>
                         </tbody>
                     </table>
-
-
                 </div>
             </div>
         </div>
@@ -212,6 +226,23 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
 </div>
 
 <script>
+    function toggleDescription(element) {
+        const shortText = element.previousElementSibling.previousElementSibling;
+        const fullText = element.previousElementSibling;
+
+        if (fullText.classList.contains('d-none')) {
+            // Show full text
+            shortText.classList.add('d-none');
+            fullText.classList.remove('d-none');
+            element.textContent = 'See Less';
+        } else {
+            // Show short text
+            fullText.classList.add('d-none');
+            shortText.classList.remove('d-none');
+            element.textContent = 'See More';
+        }
+    }
+
     function confirmDelete(campaignId) {
         const isConfirmed = confirm("Are you sure you want to delete this campaign? This action cannot be undone.");
         if (isConfirmed) {
@@ -219,7 +250,6 @@ $campaign_category = isset($_GET['campaign_category']) ? $_GET['campaign_categor
             window.location.href = `admin_all_code.php?id=${campaignId}`;
         }
     }
-
 
     // JavaScript function for automatic search filter
     function filterTable() {

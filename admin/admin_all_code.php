@@ -324,14 +324,128 @@ if (isset($_POST['reject_btn'])) {
 if (isset($_GET['id'])) {
     $campaign_id = intval($_GET['id']);
 
-    $query = "DELETE FROM campaigns WHERE id = ?";
-    $stmt = $con->prepare($query);
-    $stmt->bind_param('i', $campaign_id);
+    // Fetch campaign creator's email and name before deleting
+    $creator_query = "SELECT organizer_name, email, (SELECT SUM(amount) FROM donations WHERE campaign_id = ?) AS total_raised FROM campaigns WHERE id = ?";
+    $creator_stmt = $con->prepare($creator_query);
+    $creator_stmt->bind_param("ii", $campaign_id, $campaign_id);
+    $creator_stmt->execute();
+    $creator_result = $creator_stmt->get_result();
 
-    if ($stmt->execute()) {
-        $_SESSION['message'] = "Campaign deleted successfully.";
+    if ($creator_result->num_rows > 0) {
+        $creator = $creator_result->fetch_assoc();
+        $organizer_name = $creator['organizer_name'];
+        $email = $creator['email'];
+        $total_raised = $creator['total_raised'] ?? 0; // Handle null values
+
+        // Delete related donations first
+        $delete_donations_query = "DELETE FROM donations WHERE campaign_id = ?";
+        $donations_stmt = $con->prepare($delete_donations_query);
+        $donations_stmt->bind_param("i", $campaign_id);
+
+        if ($donations_stmt->execute()) {
+            // Now delete the campaign
+            $query = "DELETE FROM campaigns WHERE id = ?";
+            $stmt = $con->prepare($query);
+            $stmt->bind_param('i', $campaign_id);
+
+            if ($stmt->execute()) {
+
+                $mail = new PHPMailer(true);
+
+                try {
+                    // Server settings
+                    $mail->isSMTP();
+                    $mail->SMTPAuth   = true;
+                    $mail->Host       = 'smtp.gmail.com';
+                    $mail->Username   = 'aathief01@gmail.com';   // Replace with your email
+                    $mail->Password   = 'fhkbwdzlzqipbhea';    // Replace with your app password
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port       = 587;
+
+                    // Recipients
+                    $mail->setFrom('aathief01@gmail.com', 'GiveHope Campaign Platform');
+                    $mail->addAddress($email, $organizer_name);
+
+                    // Content
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Your Campaign Has Ended';
+                    $mail->Body = "
+                    <!DOCTYPE html>
+                    <html lang='en'>
+                    <head>
+                        <meta charset='UTF-8'>
+                        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                        <title>Campaign Ended</title>
+                    </head>
+                    <body style='font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f9f9f9;'>
+
+                        <table width='100%' cellspacing='0' cellpadding='0' style='background-color: #f9f9f9;'>
+                            <tr>
+                                <td align='center'>
+                                    <table width='600px' cellspacing='0' cellpadding='0' style='background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin: 20px;'>
+                                        <!-- Header Section -->
+                                        <tr>
+                                            <td style='background-color: #b71c1c; color: #ffffff; padding: 20px 30px; text-align: center; border-top-left-radius: 8px; border-top-right-radius: 8px;'>
+                                                <h2 style='margin: 0; font-size: 24px;'>Campaign Platform</h2>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Body Section -->
+                                        <tr>
+                                            <td style='padding: 30px;'>
+                                                <h3 style='color: #333333; font-size: 20px; margin-bottom: 15px;'>Dear $organizer_name,</h3>
+                                                <p style='color: #555555; font-size: 16px; margin-bottom: 20px;'>
+                                                    Your campaign has reached its deadline and has been removed from our platform.
+                                                </p>
+                                                <p style='color: #555555; font-size: 16px; margin-bottom: 20px;'>
+                                                    The total amount raised for your campaign is <strong>$$total_raised</strong>.
+                                                </p>
+                                                <p style='color: #555555; font-size: 16px; margin-bottom: 20px;'>
+                                                    Please send us your bank account details to facilitate the transfer of the raised amount.
+                                                </p>
+                                                <p style='color: #555555; font-size: 14px; margin-bottom: 20px;'>
+                                                    If you have any questions, do not hesitate to contact us at
+                                                    <a href='mailto:support@yourplatform.com' style='color: #b71c1c; text-decoration: none;'>support@yourplatform.com</a>.
+                                                </p>
+
+                                                <!-- CTA Button -->
+                                                <p style='text-align: center; margin: 30px 0;'>
+                                                    <a href='https://your-platform-link.com/contact' style='background-color: #b71c1c; color: #ffffff; padding: 10px 20px; border-radius: 5px; font-size: 16px; text-decoration: none;'>
+                                                        Contact Support
+                                                    </a>
+                                                </p>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Footer Section -->
+                                        <tr>
+                                            <td style='background-color: #f1f1f1; color: #777777; text-align: center; padding: 20px 30px; font-size: 12px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'>
+                                                <p style='margin: 0;'>Thank you for being part of our community!</p>
+                                                <p style='margin: 5px 0;'>© 2024 GiveHope Platform. All rights reserved.</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </body>
+                    </html>
+                    ";
+
+                    $mail->send();
+                    $_SESSION['message'] = "Campaign and related donations deleted successfully. Email sent to the campaign creator.";
+                } catch (Exception $e) {
+                    $_SESSION['message'] = "Campaign deleted, but email failed to send: {$mail->ErrorInfo}";
+                }
+            } else {
+                $_SESSION['message'] = "Failed to delete campaign.";
+            }
+        } else {
+            $_SESSION['message'] = "Failed to delete related donations.";
+        }
     } else {
-        $_SESSION['message'] = "Failed to delete campaign.";
+        $_SESSION['message'] = "Invalid campaign ID or creator details not found.";
     }
 
     header("Location: campaigns.php");
