@@ -77,23 +77,28 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-hand-holding-usd"></i></div>
                     Donation History
                 </a>
-                
+
                 <!-- Admin Operations -->
                 <div class="sb-sidenav-menu-heading">Admin Management</div>
                 <a class="nav-link" href="campaigns.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-bullhorn"></i></div>
                     Manage Campaigns
                 </a>
-                
+
                 <a class="nav-link" href="donors.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                     Manage Donors
                 </a>
-                
+
                 <a class="nav-link" href="manage_users.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
                     Manage Users
                 </a>
+                <a class="nav-link" href="feedback.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-comments"></i></div>
+                    Manage Feedback
+                </a>
+
             </div>
         </div>
 

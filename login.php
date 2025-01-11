@@ -141,6 +141,50 @@ include('includes/navbar.php');
         opacity: 0.7;
     }
 
+    .google-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 320px;
+        /* Increased width */
+        padding: 8px 10px;
+        /* Added padding */
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6c757d;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        /* Added subtle shadow */
+    }
+
+    .google-btn:hover {
+        background-color: #f7f7f7;
+        border-color: #c0c0c0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        /* Enhanced hover shadow */
+    }
+
+    .google-btn img.google-logo {
+        width: 30px;
+        /* Increased logo size */
+        height: 30px;
+        /* Increased logo size */
+        margin-right: 10px;
+        display: block;
+    }
+
+    .google-btn:focus {
+        outline: none;
+        border-color: #4285f4;
+        /* Google blue border on focus */
+    }
+
+
     @media only screen and (max-width: 767px) {
         .login-card {
             padding: 15px;
@@ -192,9 +236,18 @@ include('includes/navbar.php');
                     <button type="submit" name="login_btn" onclick="return validatePassword();" class="btn btn-primary btn-block">Login Now</button>
                 </div>
 
+                <!-- Google Sign-In Button -->
+                <div class="form-group text-center">
+                    <button class="google-btn" type="button">
+                        <img src="../uploads/google.png" alt="Google Logo" class="google-logo">
+                        Sign in with Google
+                    </button>
+                </div>
+
                 <div class="form-group text-center">
                     <span>Don't have an account? <a href="register.php">Sign up</a></span>
                 </div>
+
             </form>
         </div>
     </div>
